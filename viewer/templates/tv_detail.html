@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <a href="{% url 'tv_list' %}">< Back to TV list</a>
+    <br><br>
+    <hr>
+    <p>TV brand: {{ television.brand_name }}</p>
+    <p>TV model: {{ television.brand_model }}</p>
+    <p>Released year: {{ television.tv_released_year }}</p>
+{% endblock %}
