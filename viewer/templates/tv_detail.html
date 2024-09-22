@@ -20,6 +20,8 @@
             <p>Display resolution: {{ television.display_resolution }}</p>
             <p>Operation system: {{ television.operation_system }}</p>
             <a href="{% url 'index' %}" class="btn btn-success">Add to basket</a>
+            <a href="{% url 'tv_update' television.pk %}" class="btn btn-success">Edit</a>
+            <a href="{% url 'tv_delete' television.pk %}" class="btn btn-danger">Delete</a>
         </div>
         <!-- Pravá část s popisem televize -->
         <div class="tv-description" style="width: 70%; padding-left: 20px;">

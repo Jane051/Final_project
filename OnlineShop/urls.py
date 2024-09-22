@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from viewer.views import BaseView, IndexView, TVDetailView, TVListView, TVCreateView
+from viewer.views import BaseView, IndexView, TVDetailView, TVListView, TVCreateView, TVUpdateView, TVDeleteView
 from viewer.models import Television, Brand, TVOperationSystem, TVDisplayResolution, TVDisplayTechnology
 
 admin.site.register(Television)
@@ -30,5 +30,7 @@ urlpatterns = [
     path('index', IndexView.as_view(), name='index'),
     path('tv/list', TVListView.as_view(), name='tv_list'),
     path('tv/create', TVCreateView.as_view(), name='tv_create'),
+    path('tv/update/<pk>', TVUpdateView.as_view(), name='tv_update'),
+    path('tv/delete/<pk>', TVDeleteView.as_view(), name='tv_delete'),
     path('tv/detail/<pk>', TVDetailView.as_view(), name='tv_detail'),
 ]

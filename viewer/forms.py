@@ -27,6 +27,7 @@ class SignUpForm(UserCreationForm):
             profile.save()
         return result
 
+
 class TVForm(ModelForm):
   class Meta:
     model = Television

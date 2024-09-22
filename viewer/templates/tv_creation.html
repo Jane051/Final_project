@@ -1,12 +1,80 @@
 {% extends "base.html" %}
 
 {% block content %}
-
   <form method="post">
-    <table>
     {% csrf_token %}
-    {{ form }}
-</table>
-    <input type="submit">
+    {{ form.non_field_errors }}
+    <div class="form-group">
+      {{ form.brand_name.errors }}
+      <label for="{{ form.brand_name.id_for_label }}">Brand:</label>
+      {{ form.brand_name }}
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            {{ form.brand_model.errors }}
+            <label for="{{ form.brand_model.id_for_label }}">Model:</label>
+            {{ form.brand_model}}
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-group">
+            {{ form.tv_released_year.errors }}
+            <label for="{{ form.tv_released_year.id_for_label }}">Released year:</label>
+            {{ form.tv_released_year }}
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-group">
+            {{ form.tv_screen_size.errors }}
+            <label for="{{ form.tv_screen_size.id_for_label }}">Screen size:</label>
+            {{ form.tv_screen_size }}
+          </div>
+        </div>
+          <div class="col">
+          <div class="form-group">
+            {{ form.smart_tv.errors }}
+            <label for="{{ form.smart_tv.id_for_label }}">Smart TV:</label>
+            {{ form.smart_tv }}
+          </div>
+        </div>
+          <div class="col">
+          <div class="form-group">
+            {{ form.refresh_rate.errors }}
+            <label for="{{ form.refresh_rate.id_for_label }}">Refresh rate:</label>
+            {{ form.refresh_rate }}
+          </div>
+        </div>
+          <div class="col">
+          <div class="form-group">
+            {{ form.display_technology.errors }}
+            <label for="{{ form.display_technology.id_for_label }}">Display technology:</label>
+            {{ form.display_technology }}
+          </div>
+        </div>
+          <div class="col">
+          <div class="form-group">
+            {{ form.display_resolution.errors }}
+            <label for="{{ form.display_resolution.id_for_label }}">Display resolution:</label>
+            {{ form.display_resolution }}
+          </div>
+        </div>
+          <div class="col">
+          <div class="form-group">
+            {{ form.operation_system.errors }}
+            <label for="{{ form.operation_system.id_for_label }}">Operation system:</label>
+            {{ form.operation_system }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      {{ form.description.errors }}
+      <label for="{{ form.description.id_for_label }}">Description:</label>
+      {{ form.description }}
+    </div>
+    <input type="submit" value="Submit" class="btn btn-primary">
+    <a href="{% url 'tv_detail' television.pk %}" class="btn btn-danger">Back</a>
   </form>
 {% endblock %}
