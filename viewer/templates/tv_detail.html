@@ -2,9 +2,30 @@
 
 {% block content %}
     <a href="{% url 'tv_list' %}">< Back to TV list</a>
-    <br><br>
-    <hr>
-    <p>TV brand: {{ television.brand_name }}</p>
-    <p>TV model: {{ television.brand_model }}</p>
-    <p>Released year: {{ television.tv_released_year }}</p>
+    <br>
+        <div class="tv-details-container" style="display: flex; justify-content: space-between;">
+        
+        <!-- Levá část s informacemi o televizi -->
+        <div class="tv-info" style="width: 30%;">
+            <h2>{{ television.brand_name }} {{ television.brand_model }}</h2>
+            <p>Released year: {{ television.tv_released_year }}</p>
+            <p>Screen size: {{ television.tv_screen_size }}"</p>
+            <p>Smart TV: {% if television.smart_tv %}
+                            Yes
+                            {% else %}
+                            No
+                            {% endif %}</p>
+            <p>Refresh rate: {{ television.refresh_rate }} Hz</p>
+            <p>Display technology: {{ television.display_technology }}</p>
+            <p>Display resolution: {{ television.display_resolution }}</p>
+            <p>Operation system: {{ television.operation_system }}</p>
+            <a href="{% url 'index' %}" class="btn btn-success">Add to basket</a>
+        </div>
+        <!-- Pravá část s popisem televize -->
+        <div class="tv-description" style="width: 70%; padding-left: 20px;">
+            <h3>Description</h3>
+            <p>{{ television.description }}</p>
+        </div>
+
+    </div>
 {% endblock %}

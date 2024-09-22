@@ -11,18 +11,18 @@ class Brand(models.Model):
 
 
 class TVDisplayTechnology(models.Model):
-    name= models.CharField(max_length=50)
-    description = models.TextField()
+    name = models.CharField(max_length=50)
+    description = models.TextField(blank=True)
 
     def __str__(self):
-        return f'{self.name} - {self.description}'
+        return self.name
 
 
 class TVDisplayResolution(models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
-        return f'{self.name}" ()'
+        return self.name
 
 
 class TVOperationSystem(models.Model):
@@ -45,4 +45,8 @@ class Television(models.Model):
     display_technology = models.ForeignKey(TVDisplayTechnology, on_delete=models.CASCADE)
     display_resolution = models.ForeignKey(TVDisplayResolution, on_delete=models.CASCADE)
     operation_system = models.ForeignKey(TVOperationSystem, on_delete=models.CASCADE)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return f'{self.brand_name} -  {self.brand_model} - {self.tv_screen_size}"'
 
