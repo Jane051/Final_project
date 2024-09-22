@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm
-from django.forms import CharField, Textarea
-from viewer.models import Profile
+from django.forms import CharField, Textarea, ModelForm
+from viewer.models import Profile, Television
 from django.db.transaction import atomic
 
 
@@ -26,3 +26,8 @@ class SignUpForm(UserCreationForm):
         if commit:
             profile.save()
         return result
+
+class TVForm(ModelForm):
+  class Meta:
+    model = Television
+    fields = '__all__'
