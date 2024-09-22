@@ -6,3 +6,20 @@ Součástí tohoto projektu je vytvoření aplikace, která umožní přidávat 
 
 # Elektro e-shop
 Náš finální projekt se zaměřuje na eshop s elektronikou.
+
+
+### Seznam úloh
+- [x] Inicializovat Django
+- [x] Vytvořit stručný popis systému
+- [x] Konkretizovat e-shop
+- [x] Vytvořit kategorii
+- [x] Vytvořit produkt
+- [x] Přidat tlačítka k produktu a funkce k nim (Add, Edit, Delete)
+- [x] Vytvořit admina
+- [x] Vytvořit uživatele
+- [ ] Přidat další kategorie
+- [ ] Přidat další produkty
+- [ ] Vytvořit strom kategorií
+- [ ] Rozšířit uživatelský účet
+- [ ] Definovat oprávnění admin/uživatel 
+      
