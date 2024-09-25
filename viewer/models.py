@@ -33,6 +33,13 @@ class TVOperationSystem(models.Model):
         return self.name
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
 class Television(models.Model):
     brand_name = models.ForeignKey(Brand, on_delete=models.CASCADE)
     brand_model = models.CharField(max_length=50)
@@ -47,6 +54,7 @@ class Television(models.Model):
     display_resolution = models.ForeignKey(TVDisplayResolution, on_delete=models.CASCADE)
     operation_system = models.ForeignKey(TVOperationSystem, on_delete=models.CASCADE)
     description = models.TextField(blank=True)
+    categories = models.ManyToManyField(Category, related_name="televisions")
 
     def __str__(self):
         return f'{self.brand_name} -  {self.brand_model} - {self.tv_screen_size}"'

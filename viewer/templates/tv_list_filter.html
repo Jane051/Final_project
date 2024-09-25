@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <table>
+    <tbody>
+    <h1>Televize</h1>
+    <a href="{% url 'tv_list' %}">< Back to all TVs</a>
+    <br><br>
+{% if selected_smart != 'All' %}
+    <h5>Smart televize: {{ selected_smart }}</h5>
+{% endif %}
+{% if selected_technology != 'All' %}
+    <h5>Televize s technologií: {{ selected_technology }}</h5>
+    {% if selected_technology == 'OLED' %}
+        <p>OLED televize dokážou měnit intenzitu podsvícení na každém pixelu. Jejich podání černé barvy je 
+            bezkonkurenční, což se odráží i na vyšších hodnotách kontrastu – jsou proto výborné pro sledování filmů. 
+            OLED TV vyniká také maximální kvalitou obrazu a minimální spotřebou energie.</p>
+    {% endif %}
+    {% if selected_technology == 'QLED' %}
+        <p>Hledáte špičkový televizor, který se stane dominantou vašeho obýváku, multimediálním centrem celé domácnosti,
+            ale především vám zajistí obraz i zvuk jako v kině? Pak je QLED jasnou volbou!</p>
+    {% endif %}
+       {% if selected_technology == '8K TV' %}
+        <p>Pořiďte si do obývacího pokoje 8K televizi a získáte takové šikovné domácí kino. 8K televize mají rozlišení 
+            7680 × 4320 pixelů, což je aktuálně nejjemnější rozlišení UHD televizorů obecně. Pixely jsou tak malé, že 
+            je nerozlišíte ani zblízka, takže vás čeká skutečně pohlcující divácký zážitek.</p>
+    {% endif %}
+{% endif %}
+{% if selected_screen_size != 'All' %}
+    <h5>Televize s velikostí obrazovky: {{ selected_screen_size }} palců</h5>
+{% endif %}
+
+<ul>
+  {% for television in televisions %}
+    <li>{{ television.brand_name }} {{ television.brand_model }} - {{ television.tv_screen_size }}"</li>
+  {% empty %}
+    <li>Žádné televize nenalezeny.</li>
+  {% endfor %}
+</ul>
+
+    </tbody>
+  
+  </table>
+{% endblock %}
