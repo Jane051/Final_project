@@ -54,3 +54,45 @@ class TVDeleteView(DeleteView):
     success_url = reverse_lazy('tv_list')
 
 
+class FilteredTelevisionListView(ListView):
+    model = Television
+    template_name = 'tv_list_filter.html'
+    context_object_name = 'televisions'  # Název kontextu v šabloně
+
+    def get_queryset(self):
+        queryset = Television.objects.all()  # Základní queryset se všemi televizemi
+
+        smart_tv = self.kwargs.get('smart_tv')
+        if smart_tv == 'smart':
+            queryset = queryset.filter(smart_tv=True)
+        elif smart_tv == 'non-smart':
+            queryset = queryset.filter(smart_tv=False)
+
+        # Filtrovaní podle značky (brand_name)
+        brand = self.kwargs.get('brand')
+        if brand:
+            queryset = queryset.filter(brand_name__name=brand)  # brand_name je ForeignKey na model Brand
+
+        # Filtrovaní podle technologie (display_technology)
+        technology = self.kwargs.get('technology')
+        if technology:
+            queryset = queryset.filter(
+                display_technology__name=technology)  # display_technology je ForeignKey na model TVDisplayTechnology
+
+        # Filtrovaní podle velikosti obrazovky (tv_screen_size)
+        screen_size = self.kwargs.get('screen_size')
+        if screen_size:
+            queryset = queryset.filter(tv_screen_size=screen_size)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Přidej aktuální filtry do kontextu (např. pro zobrazení v šabloně)
+        context['selected_smart'] = self.kwargs.get('smart', 'All')
+        context['selected_brand'] = self.kwargs.get('brand', 'All')
+        context['selected_technology'] = self.kwargs.get('technology', 'All')
+        context['selected_screen_size'] = self.kwargs.get('screen_size', 'All')
+        return context
+
+
