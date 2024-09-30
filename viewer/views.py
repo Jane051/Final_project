@@ -1,5 +1,8 @@
 import logging
+
+from django.http import Http404
 from django.views.generic import TemplateView, DetailView, ListView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from viewer.models import Television
 from django.urls import reverse_lazy
 from viewer.forms import TVForm
@@ -27,7 +30,7 @@ class TVDetailView(DetailView):
     model = Television
 
 
-class TVCreateView(CreateView):
+class TVCreateView(LoginRequiredMixin, CreateView):
     template_name = 'tv_creation.html'
     form_class = TVForm
     success_url = reverse_lazy('tv_list')
@@ -37,7 +40,7 @@ class TVCreateView(CreateView):
         return super().form_invalid(form)
 
 
-class TVUpdateView(UpdateView):
+class TVUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'tv_creation.html'
     model = Television
     form_class = TVForm
@@ -48,7 +51,7 @@ class TVUpdateView(UpdateView):
         return super().form_invalid(form)
 
 
-class TVDeleteView(DeleteView):
+class TVDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'tv_delete.html'
     model = Television
     success_url = reverse_lazy('tv_list')
@@ -67,6 +70,8 @@ class FilteredTelevisionListView(ListView):
             queryset = queryset.filter(smart_tv=True)
         elif smart_tv == 'non-smart':
             queryset = queryset.filter(smart_tv=False)
+        elif smart_tv not in ('smart', 'non-smart', None):
+            raise Http404
 
         # Filtrovaní podle značky (brand_name)
         brand = self.kwargs.get('brand')
