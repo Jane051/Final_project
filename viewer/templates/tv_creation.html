@@ -75,6 +75,10 @@
       {{ form.description }}
     </div>
     <input type="submit" value="Submit" class="btn btn-primary">
-    <a href="{% url 'tv_detail' television.pk %}" class="btn btn-danger">Back</a>
+      {% if television.pk %}
+        <a href="{% url 'tv_detail' television.pk %}" class="btn btn-danger">Back</a>
+      {% else %}
+          <a href="{% url 'tv_list' %}" class="btn btn-danger">Back</a>
+      {% endif %}
   </form>
 {% endblock %}

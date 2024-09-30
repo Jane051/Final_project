@@ -1,35 +1,90 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <table>
-    <tbody>
-    <div class="container text-center">
-  <div class="row">
-    <div class="col">
-        <a href="{% url 'filtered_smart_tv' smart_tv='smart' %}" class="text-bg-info p-3" style="text-decoration: none;">Smart TV</a>
+<div class="container">
+    <div class="row">
+        <!-- Sloupec pro checkboxy (vlevo) -->
+        <div class="col-3">
+            <form action="#"> <!-- upravi se co se pak ma delat -->
+                <fieldset>
+                    <legend>Znacky</legend>
+
+                    <input type="checkbox" 
+                           name="check" 
+                           id="checkbox1" 
+                           value="Samsung" checked>
+                    <label for="checkbox1">Samsung</label>
+                    <br>
+
+                    <input type="checkbox" 
+                           name="check" 
+                           id="checkbox2" 
+                           value="LG">
+                    <label for="checkbox2">LG</label>
+                    <br>
+
+                    <input type="checkbox" 
+                           name="check" 
+                           id="checkbox3" 
+                           value="Panasonic">
+                    <label for="checkbox3">Panasonic</label>
+                    <br>
+
+                    <input type="checkbox" 
+                           name="check" 
+                           id="checkbox4" 
+                           value="JVC">
+                    <label for="checkbox4">JVC</label>
+                </fieldset>
+            </form>
+        </div>
+
+        <!-- Sloupec pro tabulku s televizemi (vpravo) -->
+        <div class="col-9">
+            <table class="table">
+                <tbody>
+                    <div class="container text-center">
+                        <div class="row text-bg-info p-3">
+                            <div class="col">
+                                <a href="{% url 'filtered_smart_tv' smart_tv='smart' %}" style="text-decoration: none;">Smart TV</a>
+                            </div>
+                            <div class="col">
+                                <a href="{% url 'filtered_tv_by_technology' technology='OLED' %}" style="text-decoration: none;">OLED TV</a>
+                            </div>
+                            <div class="col">
+                                <a href="{% url 'filtered_tv_by_technology' technology='QLED' %}" style="text-decoration: none;">QLED TV</a>
+                            </div>
+                            <div class="col">
+                                <a href="{% url 'filtered_tv_by_technology' technology='8K TV' %}" style="text-decoration: none;">8K TV</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">4K TV</div>
+                            <div class="col-4">Android TV</div>
+                        </div>
+                    </div>
+                    {% for television in object_list %}
+                    <tr>
+                        <td>
+                            <!-- Název televizoru -->
+                            <a href="{% url 'tv_detail' television.pk %}">
+                                {{ television.brand_name }} ({{ television.brand_model }})
+                            </a>
+                            <br>
+                            <!-- Popis televizoru menším písmem -->
+                            <span style="font-size: 70%; color: gray;">
+                                {{ television.description|slice:":50" }}...
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <br>
+            {% if user.is_authenticated %}
+            <a href="{% url 'tv_create' %}" class="btn btn-success">Add TV</a>
+            {% endif %}
+        </div>
     </div>
-    <div class="col">
-        <a href="{% url 'filtered_tv_by_technology' technology='OLED' %}" class="text-bg-info p-3" style="text-decoration: none;">OLED TV</a>
-    </div>
-    <div class="col">
-        <a href="{% url 'filtered_tv_by_technology' technology='QLED' %}" class="text-bg-info p-3" style="text-decoration: none;">QLED TV</a>
-    </div>
-    <div class="col">
-        <a href="{% url 'filtered_tv_by_technology' technology='8K TV' %}" class="text-bg-info p-3" style="text-decoration: none;">8K TV</a>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-8">4K TV</div>
-    <div class="col-4">Android TV</div>
-  </div>
 </div>
-    {% for television in object_list %}
-      <tr>
-        <td><a href="{% url 'tv_detail' television.pk %}">{{ television.brand_name }} ({{ television.brand_model }})</a></td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-    <br>
-    <a href="{% url 'tv_create' %}" class="btn btn-success">Add TV</a>
 {% endblock %}
