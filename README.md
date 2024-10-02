@@ -23,3 +23,8 @@ Náš finální projekt se zaměřuje na eshop s elektronikou.
 - [ ] Rozšířit uživatelský účet
 - [ ] Definovat oprávnění admin/uživatel 
       
+### Dodatečné úlohy
+- [ ] Vytvořit testy
+- [ ] Validace vstupních dat
+- [ ] Vytvořit "něco speciální" 
+- [ ] Vytvořit ER diagram
