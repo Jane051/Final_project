@@ -41,7 +41,7 @@ class Category(models.Model):
 
 
 class Television(models.Model):
-    brand_name = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     brand_model = models.CharField(max_length=50)
     tv_released_year = models.IntegerField(validators=[
             MinValueValidator(2010),

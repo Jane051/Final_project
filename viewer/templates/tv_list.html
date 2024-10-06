@@ -10,52 +10,52 @@
                     <legend>Znacky</legend>
 
                     <input type="checkbox" 
-                           name="check" 
+                           name="brand" 
                            id="brand_checkbox1" 
-                           value="Samsung" checked>
+                           value="Samsung" {% if 'Samsung' in selected_brand %}checked{% endif %}>
                     <label for="brand_checkbox1">Samsung</label>
                     <br>
 
                     <input type="checkbox" 
-                           name="check" 
+                           name="brand" 
                            id="brand_checkbox2" 
-                           value="LG" {% if 'LG' in selected_brands %}checked{% endif %}>
+                           value="LG" {% if 'LG' in selected_brand %}checked{% endif %}>
                     <label for="brand_checkbox2">LG</label>
                     <br>
 
                     <input type="checkbox" 
-                           name="check" 
+                           name="brand" 
                            id="brand_checkbox3" 
-                           value="Panasonic">
+                           value="Panasonic" {% if 'Panasonic' in selected_brand %}checked{% endif %}>
                     <label for="brand_checkbox3">Panasonic</label>
                     <br>
 
                     <input type="checkbox" 
-                           name="check" 
+                           name="brand" 
                            id="brand_checkbox4" 
-                           value="JVC">
+                           value="JVC" {% if 'JVC' in selected_brand %}checked{% endif %}>
                     <label for="brand_checkbox4">JVC</label>
                     
                      <legend>Technologie</legend>
 
                     <input type="checkbox" 
-                           name="check" 
+                           name="technology" 
                            id="technology_checkbox1" 
-                           value="LED" checked>
+                           value="LED" {% if 'LED' in selected_technology %}checked{% endif %}>
                     <label for="technology_checkbox1">LED</label>
                     <br>
 
                     <input type="checkbox" 
-                           name="check" 
+                           name="technology" 
                            id="technology_checkbox2" 
-                           value="OLED">
+                           value="OLED" {% if 'OLED' in selected_technology %}checked{% endif %}>
                     <label for="technology_checkbox2">OLED</label>
                     <br>
 
                     <input type="checkbox" 
-                           name="check" 
+                           name="technology" 
                            id="technology_checkbox3" 
-                           value="QLED">
+                           value="QLED" {% if 'QLED' in selected_technology %}checked{% endif %}>
                     <label for="technology_checkbox3">QLED</label>
                     <br>
                 </fieldset>
@@ -93,7 +93,7 @@
                         <td>
                             <!-- Název televizoru -->
                             <a href="{% url 'tv_detail' television.pk %}">
-                                {{ television.brand_name }} ({{ television.brand_model }})
+                                {{ television.brand }} ({{ television.brand_model }})
                             </a>
                             <br>
                             <!-- Popis televizoru menším písmem -->

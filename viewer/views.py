@@ -54,9 +54,14 @@ class TVListView(ListView):
         queryset = Television.objects.all()
 
         # Filtrování podle značek
-        selected_brands = self.request.GET.getlist('brand')
-        if selected_brands:
-            queryset = queryset.filter(brand_name__in=selected_brands)
+        selected_brand = self.request.GET.getlist('brand')
+        if selected_brand:
+            queryset = queryset.filter(brand__brand_name__in=selected_brand)
+
+        # Filtrování podle značek
+        selected_technology = self.request.GET.getlist('technology')
+        if selected_technology:
+            queryset = queryset.filter(display_technology__name__in=selected_technology)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -64,7 +69,8 @@ class TVListView(ListView):
         user = self.request.user
         # Kontrola, zda uživatel patří do skupiny 'tv_admin', pokud je přihlášen (pro podminkovani v html)
         context['is_tv_admin'] = user.groups.filter(name='tv_admin').exists()
-        context['selected_brands'] = self.request.GET.getlist('brand')
+        context['selected_brand'] = self.request.GET.getlist('brand')
+        context['selected_technology'] = self.request.GET.getlist('technology')
         return context
 
 
@@ -138,7 +144,7 @@ class FilteredTelevisionListView(ListView):
         # Filtrovaní podle značky (brand_name)
         brand = self.kwargs.get('brand')
         if brand:
-            queryset = queryset.filter(brand_name__name=brand)  # brand_name je ForeignKey na model Brand
+            queryset = queryset.filter(brand__brand_name=brand)  # brand_name je ForeignKey na model Brand
 
         # Filtrovaní podle technologie (display_technology)
         technology = self.kwargs.get('technology')
