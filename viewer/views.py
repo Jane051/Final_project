@@ -56,7 +56,7 @@ class TVListView(ListView):
         # Filtrování podle značek
         selected_brands = self.request.GET.getlist('brand')
         if selected_brands:
-            queryset = queryset.filter(brand_name__in=selected_brands)
+            queryset = queryset.filter(brand_name__brand_name__in=selected_brands)
         return queryset
 
     def get_context_data(self, **kwargs):
