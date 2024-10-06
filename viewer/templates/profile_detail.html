@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Details</h2>
+    <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+    <p>User: {{ user.username }}</p>
+    <p>Email: {{ user.email }}</p>
+    <p>Registered since {{ user.date_joined|date:"d.m.Y" }}</p>
+    <a href="{% url 'password_change' %}" class="btn btn-danger">Change password</a>
+{% endblock %}

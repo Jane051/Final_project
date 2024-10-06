@@ -19,8 +19,11 @@
             <p>Display technology: {{ television.display_technology }}</p>
             <p>Display resolution: {{ television.display_resolution }}</p>
             <p>Operation system: {{ television.operation_system }}</p>
-            {% if user.is_authenticated %}
-                <a href="{% url 'index' %}" class="btn btn-success">Add to basket</a>
+            <a href="{% url 'index' %}" class="btn btn-success">Add to basket</a>
+            {% if user.is_authenticated and user.is_superuser %}
+                <a href="{% url 'tv_update' television.pk %}" class="btn btn-success">Edit</a>
+                <a href="{% url 'tv_delete' television.pk %}" class="btn btn-danger">Delete</a>
+            {% elif user.is_authenticated and is_tv_admin %}
                 <a href="{% url 'tv_update' television.pk %}" class="btn btn-success">Edit</a>
                 <a href="{% url 'tv_delete' television.pk %}" class="btn btn-danger">Delete</a>
             {% endif %}

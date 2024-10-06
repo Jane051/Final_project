@@ -16,17 +16,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from viewer.views import (BaseView, IndexView, TVDetailView, TVListView, TVCreateView, TVUpdateView, TVDeleteView,
-                         FilteredTelevisionListView)
+                         FilteredTelevisionListView, ProfileView, SubmittableLoginView, CustomLogoutView, SubmittablePasswordChangeView)
 from viewer.models import Television, Brand, TVOperationSystem, TVDisplayResolution, TVDisplayTechnology
 
-admin.site.register(Television)
-admin.site.register(Brand)
-admin.site.register(TVOperationSystem)
-admin.site.register(TVDisplayResolution)
-admin.site.register(TVDisplayTechnology)
+admin.site.register([Television, Brand, TVDisplayResolution, TVDisplayTechnology, TVOperationSystem])
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('login/', SubmittableLoginView.as_view(), name='login'),
+    path('logout/', CustomLogoutView.as_view(), name='logout'),
+    # path('sign-up/', SignUpView.as_view(), name='sign_up'),
+    path('profile/', ProfileView.as_view(), name='profile_detail'),
+    path('password_change/', SubmittablePasswordChangeView.as_view(), name='password_change'),
     path('', BaseView.as_view(), name='home'),
     path('index', IndexView.as_view(), name='index'),
     path('tv/list', TVListView.as_view(), name='tv_list'),
