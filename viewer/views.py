@@ -11,14 +11,11 @@ from viewer.forms import TVForm, CustomAuthenticationForm, CustomPasswordChangeF
 logger = logging.getLogger(__name__)
 
 
-class ProfileView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'profile_detail.html'
 
     def get_context_data(self, **kwargs):
         return {**super().get_context_data(), 'object': self.request.user}
-
-    def test_func(self):
-        return self.request.user.is_superuser
 
 
 class SubmittableLoginView(LoginView):
@@ -50,12 +47,30 @@ class IndexView(TemplateView):
 class TVListView(ListView):
     template_name = 'tv_list.html'
     model = Television
+    context_object_name = 'object_list'  # Kontext pro šablonu
+
+    def get_queryset(self):
+        # Získání všech televizí
+        queryset = Television.objects.all()
+
+        # Filtrování podle značek
+        selected_brand = self.request.GET.getlist('brand')
+        if selected_brand:
+            queryset = queryset.filter(brand__brand_name__in=selected_brand)
+
+        # Filtrování podle značek
+        selected_technology = self.request.GET.getlist('technology')
+        if selected_technology:
+            queryset = queryset.filter(display_technology__name__in=selected_technology)
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         # Kontrola, zda uživatel patří do skupiny 'tv_admin', pokud je přihlášen (pro podminkovani v html)
-        context['is_tv_admin'] = user.is_authenticated and user.groups.filter(name='tv_admin').exists()
+        context['is_tv_admin'] = user.groups.filter(name='tv_admin').exists()
+        context['selected_brand'] = self.request.GET.getlist('brand')
+        context['selected_technology'] = self.request.GET.getlist('technology')
         return context
 
 
@@ -63,35 +78,51 @@ class TVDetailView(DetailView):
     template_name = 'tv_detail.html'
     model = Television
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        # Kontrola, zda uživatel patří do skupiny 'tv_admin', pokud je přihlášen (pro podminkovani v html)
+        context['is_tv_admin'] = user.groups.filter(name='tv_admin').exists()
+        return context
 
-class TVCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+
+class TVCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = 'tv_creation.html'
     form_class = TVForm
     success_url = reverse_lazy('tv_list')
-    permission_required = 'tv_admin'
+
+    def test_func(self):
+        # Umožní přístup pouze členům skupiny 'tv_admin' nebo superuživatelům
+        return self.request.user.is_superuser or self.request.user.groups.filter(name='tv_admin').exists()
 
     def form_invalid(self, form):
         logger.warning('User provided invalid data.')
         return super().form_invalid(form)
 
 
-class TVUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class TVUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = 'tv_creation.html'
     model = Television
     form_class = TVForm
     success_url = reverse_lazy('tv_list')
-    permission_required = 'tv_admin'
+
+    def test_func(self):
+        # Umožní přístup pouze členům skupiny 'tv_admin' nebo superuživatelům
+        return self.request.user.is_superuser or self.request.user.groups.filter(name='tv_admin').exists()
 
     def form_invalid(self, form):
         logger.warning('User provided invalid data while updating a movie.')
         return super().form_invalid(form)
 
 
-class TVDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class TVDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = 'tv_delete.html'
     model = Television
     success_url = reverse_lazy('tv_list')
-    permission_required = 'tv_admin'
+
+    def test_func(self):
+        # Umožní přístup pouze členům skupiny 'tv_admin' nebo superuživatelům
+        return self.request.user.is_superuser or self.request.user.groups.filter(name='tv_admin').exists()
 
 
 class FilteredTelevisionListView(ListView):
@@ -113,7 +144,7 @@ class FilteredTelevisionListView(ListView):
         # Filtrovaní podle značky (brand_name)
         brand = self.kwargs.get('brand')
         if brand:
-            queryset = queryset.filter(brand_name__name=brand)  # brand_name je ForeignKey na model Brand
+            queryset = queryset.filter(brand__brand_name=brand)  # brand_name je ForeignKey na model Brand
 
         # Filtrovaní podle technologie (display_technology)
         technology = self.kwargs.get('technology')

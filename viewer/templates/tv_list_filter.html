@@ -32,7 +32,7 @@
 
 <ul>
   {% for television in televisions %}
-    <li><a href="{% url 'tv_detail' television.pk %}">{{ television.brand_name }} {{ television.brand_model }} - {{ television.tv_screen_size }}"</a></li>
+    <li><a href="{% url 'tv_detail' television.pk %}">{{ television.brand }} {{ television.brand_model }} - {{ television.tv_screen_size }}"</a></li>
   {% empty %}
     <li>Žádné televize nenalezeny.</li>
   {% endfor %}
