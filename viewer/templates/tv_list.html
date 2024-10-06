@@ -5,37 +5,62 @@
     <div class="row">
         <!-- Sloupec pro checkboxy (vlevo) -->
         <div class="col-3">
-            <form action="#"> <!-- upravi se co se pak ma delat -->
+            <form action="{% url 'tv_list' %}" method="GET">
                 <fieldset>
                     <legend>Znacky</legend>
 
                     <input type="checkbox" 
                            name="check" 
-                           id="checkbox1" 
+                           id="brand_checkbox1" 
                            value="Samsung" checked>
-                    <label for="checkbox1">Samsung</label>
+                    <label for="brand_checkbox1">Samsung</label>
                     <br>
 
                     <input type="checkbox" 
                            name="check" 
-                           id="checkbox2" 
-                           value="LG">
-                    <label for="checkbox2">LG</label>
+                           id="brand_checkbox2" 
+                           value="LG" {% if 'LG' in selected_brands %}checked{% endif %}>
+                    <label for="brand_checkbox2">LG</label>
                     <br>
 
                     <input type="checkbox" 
                            name="check" 
-                           id="checkbox3" 
+                           id="brand_checkbox3" 
                            value="Panasonic">
-                    <label for="checkbox3">Panasonic</label>
+                    <label for="brand_checkbox3">Panasonic</label>
                     <br>
 
                     <input type="checkbox" 
                            name="check" 
-                           id="checkbox4" 
+                           id="brand_checkbox4" 
                            value="JVC">
-                    <label for="checkbox4">JVC</label>
+                    <label for="brand_checkbox4">JVC</label>
+                    
+                     <legend>Technologie</legend>
+
+                    <input type="checkbox" 
+                           name="check" 
+                           id="technology_checkbox1" 
+                           value="LED" checked>
+                    <label for="technology_checkbox1">LED</label>
+                    <br>
+
+                    <input type="checkbox" 
+                           name="check" 
+                           id="technology_checkbox2" 
+                           value="OLED">
+                    <label for="technology_checkbox2">OLED</label>
+                    <br>
+
+                    <input type="checkbox" 
+                           name="check" 
+                           id="technology_checkbox3" 
+                           value="QLED">
+                    <label for="technology_checkbox3">QLED</label>
+                    <br>
                 </fieldset>
+                <!-- Tlačítko pro odeslání formuláře -->
+                <button type="submit" class="btn btn-primary">Filtrovat</button>
             </form>
         </div>
 

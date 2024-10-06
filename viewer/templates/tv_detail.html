@@ -23,7 +23,7 @@
             {% if user.is_authenticated and user.is_superuser %}
                 <a href="{% url 'tv_update' television.pk %}" class="btn btn-success">Edit</a>
                 <a href="{% url 'tv_delete' television.pk %}" class="btn btn-danger">Delete</a>
-            {% elif user.is_authenticated and is_tv_admin %}
+            {% elif is_tv_admin %}
                 <a href="{% url 'tv_update' television.pk %}" class="btn btn-success">Edit</a>
                 <a href="{% url 'tv_delete' television.pk %}" class="btn btn-danger">Delete</a>
             {% endif %}
