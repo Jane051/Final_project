@@ -81,8 +81,11 @@
                 </tbody>
             </table>
             <br>
-            {% if user.is_authenticated %}
-            <a href="{% url 'tv_create' %}" class="btn btn-success">Add TV</a>
+            <!-- Tlacitko viditelne pro prihlasene a zaroven pro superuzivatele nebo cleny skupiny tv_admin -->
+            {% if user.is_authenticated and user.is_superuser %}
+                <a href="{% url 'tv_create' %}" class="btn btn-success">Add TV</a>
+            {% elif user.is_authenticated and is_tv_admin %}
+                <a href="{% url 'tv_create' %}" class="btn btn-success">Add TV</a>
             {% endif %}
         </div>
     </div>
