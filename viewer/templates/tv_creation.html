@@ -1,84 +1,111 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.non_field_errors }}
-    <div class="form-group">
-      {{ form.brand_name.errors }}
-      <label for="{{ form.brand_name.id_for_label }}">Brand:</label>
-      {{ form.brand_name }}
-    </div>
-    <div class="form-group">
-      <div class="row">
-        <div class="col">
-          <div class="form-group">
-            {{ form.brand_model.errors }}
-            <label for="{{ form.brand_model.id_for_label }}">Model:</label>
-            {{ form.brand_model}}
-          </div>
-        </div>
-        <div class="col">
-          <div class="form-group">
-            {{ form.tv_released_year.errors }}
-            <label for="{{ form.tv_released_year.id_for_label }}">Released year:</label>
-            {{ form.tv_released_year }}
-          </div>
-        </div>
-        <div class="col">
-          <div class="form-group">
-            {{ form.tv_screen_size.errors }}
-            <label for="{{ form.tv_screen_size.id_for_label }}">Screen size:</label>
-            {{ form.tv_screen_size }}
-          </div>
-        </div>
-          <div class="col">
-          <div class="form-group">
-            {{ form.smart_tv.errors }}
-            <label for="{{ form.smart_tv.id_for_label }}">Smart TV:</label>
-            {{ form.smart_tv }}
-          </div>
-        </div>
-          <div class="col">
-          <div class="form-group">
-            {{ form.refresh_rate.errors }}
-            <label for="{{ form.refresh_rate.id_for_label }}">Refresh rate:</label>
-            {{ form.refresh_rate }}
-          </div>
-        </div>
-          <div class="col">
-          <div class="form-group">
-            {{ form.display_technology.errors }}
-            <label for="{{ form.display_technology.id_for_label }}">Display technology:</label>
-            {{ form.display_technology }}
-          </div>
-        </div>
-          <div class="col">
-          <div class="form-group">
-            {{ form.display_resolution.errors }}
-            <label for="{{ form.display_resolution.id_for_label }}">Display resolution:</label>
-            {{ form.display_resolution }}
-          </div>
-        </div>
-          <div class="col">
-          <div class="form-group">
-            {{ form.operation_system.errors }}
-            <label for="{{ form.operation_system.id_for_label }}">Operation system:</label>
-            {{ form.operation_system }}
-          </div>
-        </div>
+
+    <div class="row mb-3">
+      <label for="{{ form.brand.id_for_label }}" class="col-sm-2 col-form-label">Brand:</label>
+      <div class="col-sm-10">
+        {{ form.brand.errors }}
+        {{ form.brand }}
       </div>
     </div>
-    <div class="form-group">
-      {{ form.description.errors }}
-      <label for="{{ form.description.id_for_label }}">Description:</label>
-      {{ form.description }}
+
+    <div class="row mb-3">
+      <label for="{{ form.brand_model.id_for_label }}" class="col-sm-2 col-form-label">Model:</label>
+      <div class="col-sm-10">
+        {{ form.brand_model.errors }}
+        {{ form.brand_model }}
+      </div>
     </div>
+
+    <div class="row mb-3">
+      <label for="{{ form.tv_released_year.id_for_label }}" class="col-sm-2 col-form-label">Released year:</label>
+      <div class="col-sm-10">
+        {{ form.tv_released_year.errors }}
+        {{ form.tv_released_year }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="{{ form.tv_screen_size.id_for_label }}" class="col-sm-2 col-form-label">Screen size:</label>
+      <div class="col-sm-10">
+        {{ form.tv_screen_size.errors }}
+        {{ form.tv_screen_size }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="{{ form.smart_tv.id_for_label }}" class="col-sm-2 col-form-label">Smart TV:</label>
+      <div class="col-sm-10">
+        {{ form.smart_tv.errors }}
+        {{ form.smart_tv }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="{{ form.refresh_rate.id_for_label }}" class="col-sm-2 col-form-label">Refresh rate:</label>
+      <div class="col-sm-10">
+        {{ form.refresh_rate.errors }}
+        {{ form.refresh_rate }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="{{ form.display_technology.id_for_label }}" class="col-sm-2 col-form-label">Display technology:</label>
+      <div class="col-sm-10">
+        {{ form.display_technology.errors }}
+        {{ form.display_technology }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="{{ form.display_resolution.id_for_label }}" class="col-sm-2 col-form-label">Display resolution:</label>
+      <div class="col-sm-10">
+        {{ form.display_resolution.errors }}
+        {{ form.display_resolution }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="{{ form.operation_system.id_for_label }}" class="col-sm-2 col-form-label">Operation system:</label>
+      <div class="col-sm-10">
+        {{ form.operation_system.errors }}
+        {{ form.operation_system }}
+      </div>
+    </div>
+      
+      <div class="row mb-3">
+      <label for="{{ form.image.id_for_label }}" class="col-sm-2 col-form-label">Image:</label>
+      <div class="col-sm-10">
+        {{ form.image.errors }}
+        {{ form.image }}
+      </div>
+    </div>
+      
+      <div class="row mb-3">
+      <label for="{{ form.price.id_for_label }}" class="col-sm-2 col-form-label">Price:</label>
+      <div class="col-sm-10">
+        {{ form.price.errors }}
+        {{ form.price }}
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label">Description:</label>
+      <div class="col-sm-10">
+        {{ form.description.errors }}
+        {{ form.description }}
+      </div>
+    </div>
+
     <input type="submit" value="Submit" class="btn btn-primary">
-      {% if television.pk %}
-        <a href="{% url 'tv_detail' television.pk %}" class="btn btn-danger">Back</a>
-      {% else %}
-          <a href="{% url 'tv_list' %}" class="btn btn-danger">Back</a>
-      {% endif %}
+    {% if television.pk %}
+      <a href="{% url 'tv_detail' television.pk %}" class="btn btn-secondary">Back</a>
+    {% else %}
+      <a href="{% url 'tv_list' %}" class="btn btn-secondary">Back</a>
+    {% endif %}
   </form>
 {% endblock %}

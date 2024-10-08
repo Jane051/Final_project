@@ -54,10 +54,12 @@ class Television(models.Model):
     display_resolution = models.ForeignKey(TVDisplayResolution, on_delete=models.CASCADE)
     operation_system = models.ForeignKey(TVOperationSystem, on_delete=models.CASCADE)
     description = models.TextField(blank=True)
-    categories = models.ManyToManyField(Category, related_name="televisions")
+    categories = models.ManyToManyField(Category, related_name="televisions", blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], default=0.00)
+    image = models.ImageField(upload_to='television_images/', blank=True, null=True)
 
     def __str__(self):
-        return f'{self.brand_name} -  {self.brand_model} - {self.tv_screen_size}"'
+        return f'{self.brand} -  {self.brand_model} - {self.tv_screen_size}"'
 
 
 class Profile(models.Model):

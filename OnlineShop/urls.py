@@ -19,6 +19,9 @@ from viewer.views import (BaseView, IndexView, TVDetailView, TVListView, TVCreat
                          FilteredTelevisionListView, ProfileView, SubmittableLoginView, CustomLogoutView, SubmittablePasswordChangeView)
 from viewer.models import Television, Brand, TVOperationSystem, TVDisplayResolution, TVDisplayTechnology
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 admin.site.register([Television, Brand, TVDisplayResolution, TVDisplayTechnology, TVOperationSystem])
 
 urlpatterns = [
@@ -37,7 +40,11 @@ urlpatterns = [
     path('tv/detail/<pk>', TVDetailView.as_view(), name='tv_detail'),
     path('tv/<str:smart_tv>/', FilteredTelevisionListView.as_view(), name='filtered_smart_tv'),
     path('tv/technology/<str:technology>/', FilteredTelevisionListView.as_view(), name='filtered_tv_by_technology'),
-    path('tv/screen-size/<int:screen_size>/', FilteredTelevisionListView.as_view(), name='filtered_tv_by_screen_size'),
+    path('tv/resolution/<str:resolution>/', FilteredTelevisionListView.as_view(), name='filtered_tv_by_resolution'),
+    path('tv/oper-system/<str:op_system>/', FilteredTelevisionListView.as_view(), name='filtered_tv_by_op_system'),
     path('tv/brand/<str:brand>/technology/<str:technology>/', FilteredTelevisionListView.as_view(),
          name='filtered_tv_by_brand_and_technology'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

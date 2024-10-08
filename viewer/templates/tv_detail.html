@@ -1,6 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <style>
+    .flag {
+        display: inline-block;
+        padding: 10px 15px;
+        border-radius: 20px;
+        color: white;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .flag-color-green {
+        background-color: green;
+    }
+</style>
+
     <a href="{% url 'tv_list' %}">< Back to TV list</a>
     <br>
         <div class="tv-details-container" style="display: flex; justify-content: space-between;">
@@ -21,15 +36,39 @@
             <p>Operation system: {{ television.operation_system }}</p>
             <a href="{% url 'index' %}" class="btn btn-success">Add to basket</a>
             {% if user.is_authenticated and user.is_superuser %}
-                <a href="{% url 'tv_update' television.pk %}" class="btn btn-success">Edit</a>
+                <a href="{% url 'tv_update' television.pk %}" class="btn btn-warning">Edit</a>
                 <a href="{% url 'tv_delete' television.pk %}" class="btn btn-danger">Delete</a>
             {% elif is_tv_admin %}
-                <a href="{% url 'tv_update' television.pk %}" class="btn btn-success">Edit</a>
+                <a href="{% url 'tv_update' television.pk %}" class="btn btn-warning">Edit</a>
                 <a href="{% url 'tv_delete' television.pk %}" class="btn btn-danger">Delete</a>
             {% endif %}
         </div>
         <!-- Pravá část s popisem televize -->
         <div class="tv-description" style="width: 70%; padding-left: 20px;">
+            <div class="tv-info" style="display: flex; align-items: center;">
+    <!-- Obrázek -->
+    <div class="tv-image" style="flex-shrink: 0; padding-right: 20px;">
+        {% if television.image %}
+            <img src="{{ television.image.url }}" alt="missing picture of {{ television.brand }} {{ television.brand_model }}" width="350" height="350">
+        {% else %}
+            <div style="width: 350px; height: 350px; background-color: #ccc; display: flex; align-items: center; justify-content: center;">
+                <p>No Image Available</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Cena  -->
+    <div class="tv-price">
+        <!-- Doprava zdarma za splnění podmínky výrobce  -->
+        {% if television.brand.brand_name == "Panasonic" %}
+        <div class="product-flags">
+        <span class="flag flag-color-green">DOPRAVA ZDARMA</span>
+        </div>
+        {% endif %}
+        <h3>{{ television.price|floatformat:0 }},- Kč</h3>
+        
+    </div>
+</div>
             <h3>Description</h3>
             <p>{{ television.description }}</p>
         </div>
