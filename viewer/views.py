@@ -58,10 +58,15 @@ class TVListView(ListView):
         if selected_brand:
             queryset = queryset.filter(brand__brand_name__in=selected_brand)
 
-        # Filtrování podle značek
+        # Filtrování podle technologie
         selected_technology = self.request.GET.getlist('technology')
         if selected_technology:
             queryset = queryset.filter(display_technology__name__in=selected_technology)
+
+        # Filtrování podle rozliseni displeje
+        selected_resolution = self.request.GET.getlist('resolution')
+        if selected_resolution:
+            queryset = queryset.filter(display_resolution__name__in=selected_resolution)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -71,6 +76,7 @@ class TVListView(ListView):
         context['is_tv_admin'] = user.groups.filter(name='tv_admin').exists()
         context['selected_brand'] = self.request.GET.getlist('brand')
         context['selected_technology'] = self.request.GET.getlist('technology')
+        context['selected_resolution'] = self.request.GET.getlist('resolution')
         return context
 
 
@@ -141,10 +147,11 @@ class FilteredTelevisionListView(ListView):
         elif smart_tv not in ('smart', 'non-smart', None):
             raise Http404
 
-        # Filtrovaní podle značky (brand_name)
-        brand = self.kwargs.get('brand')
-        if brand:
-            queryset = queryset.filter(brand__brand_name=brand)  # brand_name je ForeignKey na model Brand
+        # Filtrovaní podle rozliseni(display_resolution)
+        resolution = self.kwargs.get('resolution')
+        if resolution:
+            queryset = queryset.filter(
+                display_resolution__name=resolution)  # display_resolution je ForeignKey na model TV display resolution
 
         # Filtrovaní podle technologie (display_technology)
         technology = self.kwargs.get('technology')
@@ -152,10 +159,10 @@ class FilteredTelevisionListView(ListView):
             queryset = queryset.filter(
                 display_technology__name=technology)  # display_technology je ForeignKey na model TVDisplayTechnology
 
-        # Filtrovaní podle velikosti obrazovky (tv_screen_size)
-        screen_size = self.kwargs.get('screen_size')
-        if screen_size:
-            queryset = queryset.filter(tv_screen_size=screen_size)
+        # Filtrovaní podle operacniho systemu
+        op_system = self.kwargs.get('op_system')
+        if op_system:
+            queryset = queryset.filter(operation_system__name=op_system)
 
         return queryset
 
@@ -163,9 +170,9 @@ class FilteredTelevisionListView(ListView):
         context = super().get_context_data(**kwargs)
         # Přidej aktuální filtry do kontextu (např. pro zobrazení v šabloně)
         context['selected_smart'] = self.kwargs.get('smart', 'All')
-        context['selected_brand'] = self.kwargs.get('brand', 'All')
+        context['selected_resolution'] = self.kwargs.get('resolution', 'All')
         context['selected_technology'] = self.kwargs.get('technology', 'All')
-        context['selected_screen_size'] = self.kwargs.get('screen_size', 'All')
+        context['selected_op_system'] = self.kwargs.get('op_system', 'All')
         return context
 
 

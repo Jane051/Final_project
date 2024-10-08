@@ -3,14 +3,13 @@
 {% block content %}
   <table>
     <tbody>
-    <h1>Televize</h1>
-    <a href="{% url 'tv_list' %}">< Back to all TVs</a>
+    <a href="{% url 'tv_list' %}">< Všechny televize</a>
     <br><br>
 {% if selected_smart != 'All' %}
-    <h5>Smart televize: {{ selected_smart }}</h5>
+    <h1>Smart televize: {{ selected_smart }}</h1>
 {% endif %}
 {% if selected_technology != 'All' %}
-    <h5>Televize s technologií: {{ selected_technology }}</h5>
+    <h1>Televize s technologií: {{ selected_technology }}</h1>
     {% if selected_technology == 'OLED' %}
         <p>OLED televize dokážou měnit intenzitu podsvícení na každém pixelu. Jejich podání černé barvy je 
             bezkonkurenční, což se odráží i na vyšších hodnotách kontrastu – jsou proto výborné pro sledování filmů. 
@@ -20,15 +19,28 @@
         <p>Hledáte špičkový televizor, který se stane dominantou vašeho obýváku, multimediálním centrem celé domácnosti,
             ale především vám zajistí obraz i zvuk jako v kině? Pak je QLED jasnou volbou!</p>
     {% endif %}
-       {% if selected_technology == '8K TV' %}
+{% endif %}
+{% if selected_resolution != 'All' %}
+    <h1>Televize s rozlišením: {{ selected_resolution }} </h1>
+    {% if selected_resolution == '8K Ultra HD' %}
         <p>Pořiďte si do obývacího pokoje 8K televizi a získáte takové šikovné domácí kino. 8K televize mají rozlišení 
             7680 × 4320 pixelů, což je aktuálně nejjemnější rozlišení UHD televizorů obecně. Pixely jsou tak malé, že 
             je nerozlišíte ani zblízka, takže vás čeká skutečně pohlcující divácký zážitek.</p>
     {% endif %}
+    {% if selected_resolution == '4K Ultra HD' %}
+        <p>Ultra HD znamená vysoké rozlišení a tedy schopnost zobrazit více detailů. Obraz na takové televizi se skládá
+            ze čtyřnásobného počtu pixelů oproti Full HD, takže si i pouhým okem všimnete rozdílu. </p>
+    {% endif %}
 {% endif %}
-{% if selected_screen_size != 'All' %}
-    <h5>Televize s velikostí obrazovky: {{ selected_screen_size }} palců</h5>
-{% endif %}
+    {% if selected_op_system != 'All' %}
+        {% if selected_op_system == 'Android TV' %}
+            <h1>Android televize</h1>
+            <p>Hledáte kvalitní televizi, která by nebyla pouze zdrojem TV signálu, ale i multimediálním centrem celé 
+                domácnosti? Pak vsaďte na televizory s operačním systémem Android, se kterými budete moci sdílet videa 
+                z YouTube, sledovat filmy z Netflixu a dalších služeb nebo si prohlížet fotky a videa pořízené vaším 
+                smartphonem. </p>
+        {% endif %}
+    {% endif %}
 
 <ul>
   {% for television in televisions %}

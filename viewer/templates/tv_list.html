@@ -1,67 +1,113 @@
 {% extends "base.html" %}
+{% load static %}
 
+<!-- Přidání CSS přímo do šablony -->
+{#{% block head %}#}
+{#<style>#}
+{#.scrollable-checkboxes {#}
+{#    max-height: 400px; /* Nastavení maximální výšky */#}
+{#    overflow-y: auto;  /* Vertikální scrollování */#}
+{#    padding: 10px;#}
+{#    border: 1px solid #ccc;#}
+{#    background-color: #CC0000;#}
+
+{#</style>#}
+{#{% endblock %}#}
 {% block content %}
 <div class="container">
     <div class="row">
         <!-- Sloupec pro checkboxy (vlevo) -->
         <div class="col-3">
-            <form action="{% url 'tv_list' %}" method="GET">
-                <fieldset>
-                    <legend>Znacky</legend>
+            <!-- Přidáno scrollovací div -->
+            <div class="scrollable-checkboxes">
+                <form action="{% url 'tv_list' %}" method="GET">
+                    <fieldset>
+                        <legend>Znacky</legend>
 
-                    <input type="checkbox" 
-                           name="brand" 
-                           id="brand_checkbox1" 
-                           value="Samsung" {% if 'Samsung' in selected_brand %}checked{% endif %}>
-                    <label for="brand_checkbox1">Samsung</label>
-                    <br>
+                        <input type="checkbox" 
+                               name="brand" 
+                               id="brand_checkbox1" 
+                               value="Samsung" {% if 'Samsung' in selected_brand %}checked{% endif %}>
+                        <label for="brand_checkbox1">Samsung</label>
+                        <br>
 
-                    <input type="checkbox" 
-                           name="brand" 
-                           id="brand_checkbox2" 
-                           value="LG" {% if 'LG' in selected_brand %}checked{% endif %}>
-                    <label for="brand_checkbox2">LG</label>
-                    <br>
+                        <input type="checkbox" 
+                               name="brand" 
+                               id="brand_checkbox2" 
+                               value="LG" {% if 'LG' in selected_brand %}checked{% endif %}>
+                        <label for="brand_checkbox2">LG</label>
+                        <br>
 
-                    <input type="checkbox" 
-                           name="brand" 
-                           id="brand_checkbox3" 
-                           value="Panasonic" {% if 'Panasonic' in selected_brand %}checked{% endif %}>
-                    <label for="brand_checkbox3">Panasonic</label>
-                    <br>
+                        <input type="checkbox" 
+                               name="brand" 
+                               id="brand_checkbox3" 
+                               value="Panasonic" {% if 'Panasonic' in selected_brand %}checked{% endif %}>
+                        <label for="brand_checkbox3">Panasonic</label>
+                        <br>
 
-                    <input type="checkbox" 
-                           name="brand" 
-                           id="brand_checkbox4" 
-                           value="JVC" {% if 'JVC' in selected_brand %}checked{% endif %}>
-                    <label for="brand_checkbox4">JVC</label>
-                    
-                     <legend>Technologie</legend>
+                        <input type="checkbox" 
+                               name="brand" 
+                               id="brand_checkbox4" 
+                               value="JVC" {% if 'JVC' in selected_brand %}checked{% endif %}>
+                        <label for="brand_checkbox4">JVC</label>
+                        
+                        <legend>Technologie</legend>
 
-                    <input type="checkbox" 
-                           name="technology" 
-                           id="technology_checkbox1" 
-                           value="LED" {% if 'LED' in selected_technology %}checked{% endif %}>
-                    <label for="technology_checkbox1">LED</label>
-                    <br>
+                        <input type="checkbox" 
+                               name="technology" 
+                               id="technology_checkbox1" 
+                               value="LED" {% if 'LED' in selected_technology %}checked{% endif %}>
+                        <label for="technology_checkbox1">LED</label>
+                        <br>
 
-                    <input type="checkbox" 
-                           name="technology" 
-                           id="technology_checkbox2" 
-                           value="OLED" {% if 'OLED' in selected_technology %}checked{% endif %}>
-                    <label for="technology_checkbox2">OLED</label>
-                    <br>
+                        <input type="checkbox" 
+                               name="technology" 
+                               id="technology_checkbox2" 
+                               value="OLED" {% if 'OLED' in selected_technology %}checked{% endif %}>
+                        <label for="technology_checkbox2">OLED</label>
+                        <br>
 
-                    <input type="checkbox" 
-                           name="technology" 
-                           id="technology_checkbox3" 
-                           value="QLED" {% if 'QLED' in selected_technology %}checked{% endif %}>
-                    <label for="technology_checkbox3">QLED</label>
-                    <br>
-                </fieldset>
-                <!-- Tlačítko pro odeslání formuláře -->
-                <button type="submit" class="btn btn-primary">Filtrovat</button>
-            </form>
+                        <input type="checkbox" 
+                               name="technology" 
+                               id="technology_checkbox3" 
+                               value="QLED" {% if 'QLED' in selected_technology %}checked{% endif %}>
+                        <label for="technology_checkbox3">QLED</label>
+                        <br>
+
+                        <legend>Rozlišení displeje</legend>
+
+                        <input type="checkbox" 
+                               name="resolution" 
+                               id="resolutions_checkbox1" 
+                               value="HD Ready" {% if 'HD Ready' in selected_resolution %}checked{% endif %}>
+                        <label for="resolutions_checkbox1">HD Ready</label>
+                        <br>
+
+                        <input type="checkbox" 
+                               name="resolution" 
+                               id="resolutions_checkbox2" 
+                               value="8K Ultra HD" {% if '8K Ultra HD' in selected_resolution %}checked{% endif %}>
+                        <label for="resolutions_checkbox2">8K Ultra HD</label>
+                        <br>
+
+                        <input type="checkbox" 
+                               name="resolution" 
+                               id="resolutions_checkbox3" 
+                               value="Full HD" {% if 'Full HD' in selected_resolution %}checked{% endif %}>
+                        <label for="resolutions_checkbox3">Full HD</label>
+                        <br>
+
+                        <input type="checkbox" 
+                               name="resolution" 
+                               id="resolutions_checkbox4" 
+                               value="4K Ultra HD" {% if '4K Ultra HD' in selected_resolution %}checked{% endif %}>
+                        <label for="resolutions_checkbox4">4K Ultra HD</label>
+                        <br>
+                    </fieldset>
+                    <!-- Tlačítko pro odeslání formuláře -->
+                    <button type="submit" class="btn btn-primary">Filtrovat</button>
+                </form>
+            </div>
         </div>
 
         <!-- Sloupec pro tabulku s televizemi (vpravo) -->
@@ -79,13 +125,18 @@
                             <div class="col">
                                 <a href="{% url 'filtered_tv_by_technology' technology='QLED' %}" style="text-decoration: none;">QLED TV</a>
                             </div>
-                            <div class="col">
-                                <a href="{% url 'filtered_tv_by_technology' technology='8K TV' %}" style="text-decoration: none;">8K TV</a>
-                            </div>
+                            
                         </div>
-                        <div class="row">
-                            <div class="col-8">4K TV</div>
-                            <div class="col-4">Android TV</div>
+                        <div class="row text-bg-info p-3">
+                            <div class="col">
+                                <a href="{% url 'filtered_tv_by_resolution' resolution='8K Ultra HD' %}" style="text-decoration: none;">8K TV</a>
+                            </div>
+                            <div class="col">
+                                <a href="{% url 'filtered_tv_by_resolution' resolution='4K Ultra HD' %}" style="text-decoration: none;">4K TV</a>
+                            </div>
+                            <div class="col">
+                                <a href="{% url 'filtered_tv_by_op_system' op_system='Android TV' %}" style="text-decoration: none;">Android TV</a>
+                            </div>
                         </div>
                     </div>
                     {% for television in object_list %}

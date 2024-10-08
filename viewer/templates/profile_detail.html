@@ -6,5 +6,5 @@
     <p>User: {{ user.username }}</p>
     <p>Email: {{ user.email }}</p>
     <p>Registered since {{ user.date_joined|date:"d.m.Y" }}</p>
-    <a href="{% url 'password_change' %}" class="btn btn-danger">Change password</a>
+    <a href="{% url 'password_change' %}" class="btn btn-warning">Change password</a>
 {% endblock %}
