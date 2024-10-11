@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    
+     <div class="center-text">
+        <h2>Registrace</h2>
+    </div>
+    <div class="mb-4"></div> <!-- Přidání mezery pod nadpisem -->
+    <form method="POST" >
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Registrovat</button>
+    </form>
+    <p>Již máte účet? <a href="{% url 'login' %}">Přihlaste se</a></p>
+    <!-- Vráceni se na homepage -->
+    <a href='{% url 'home' %}' class="btn btn-secondary">Zpět na úvodní stránku</a>
+
+{% endblock %}

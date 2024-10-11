@@ -16,7 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from viewer.views import (BaseView, IndexView, TVDetailView, TVListView, TVCreateView, TVUpdateView, TVDeleteView,
-                         FilteredTelevisionListView, ProfileView, SubmittableLoginView, CustomLogoutView, SubmittablePasswordChangeView)
+                          FilteredTelevisionListView, ProfileView, SubmittableLoginView, CustomLogoutView,
+                          SubmittablePasswordChangeView, edit_profile, signup)
 from viewer.models import Television, Brand, TVOperationSystem, TVDisplayResolution, TVDisplayTechnology
 
 from django.conf import settings
@@ -28,7 +29,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', SubmittableLoginView.as_view(), name='login'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
-    # path('sign-up/', SignUpView.as_view(), name='sign_up'),
+    path('signup/', signup, name='signup'),
     path('profile/', ProfileView.as_view(), name='profile_detail'),
     path('password_change/', SubmittablePasswordChangeView.as_view(), name='password_change'),
     path('', BaseView.as_view(), name='home'),
@@ -44,6 +45,7 @@ urlpatterns = [
     path('tv/oper-system/<str:op_system>/', FilteredTelevisionListView.as_view(), name='filtered_tv_by_op_system'),
     path('tv/brand/<str:brand>/technology/<str:technology>/', FilteredTelevisionListView.as_view(),
          name='filtered_tv_by_brand_and_technology'),
+    path('profile/edit/', edit_profile, name='edit_profile'),
 ]
 
 if settings.DEBUG:
