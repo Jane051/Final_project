@@ -4,9 +4,10 @@ from django.http import Http404
 from django.views.generic import TemplateView, DetailView, ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
-from viewer.models import Television
+from viewer.models import Television, MobilePhone, Order
 from django.urls import reverse_lazy
-from viewer.forms import TVForm, CustomAuthenticationForm, CustomPasswordChangeForm
+from django.shortcuts import get_object_or_404, redirect
+from viewer.forms import TVForm, CustomAuthenticationForm, CustomPasswordChangeForm, OrderForm
 
 logger = logging.getLogger(__name__)
 
@@ -36,11 +37,6 @@ class SubmittablePasswordChangeView(PasswordChangeView):
 
 class BaseView(TemplateView):
     template_name = 'home.html'
-    extra_context = {}
-
-
-class IndexView(TemplateView):
-    template_name = 'index.html'
     extra_context = {}
 
 
@@ -176,3 +172,41 @@ class FilteredTelevisionListView(ListView):
         return context
 
 
+class MobileListView(ListView):
+    template_name = 'mobile_list.html'
+    model = MobilePhone
+    context_object_name = 'object_list'  # Kontext pro šablonu
+
+
+class CreateOrderView(LoginRequiredMixin, CreateView):
+    model = Order
+    form_class = OrderForm
+    template_name = 'create_order.html'
+
+    def get_televison(self):
+        # Získání televize podle ID předaného v URL
+        return get_object_or_404(Television, pk=self.kwargs['television_id'])
+
+    def get_form_kwargs(self):
+        # Přidání uživatele do formuláře
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        # Neuložíme ještě formulář (commit=False) a upravíme některé jeho hodnoty
+        television = self.get_televison()
+        order = form.save(commit=False)
+        order.user = self.request.user
+        order.television = television
+        order.status = 'submitted'
+        order.save()
+
+        # Po úspěšném uložení přesměrujeme na stránku úspěchu
+        return redirect('order_success', order_id=order.order_id)
+
+    def get_context_data(self, **kwargs):
+        # Přidáme motorku do kontextu pro použití v šabloně
+        context = super().get_context_data(**kwargs)
+        context['television'] = self.get_televison()
+        return context

@@ -23,18 +23,18 @@
         <!-- Levá část s informacemi o televizi -->
         <div class="tv-info" style="width: 30%;">
             <h2>{{ television.brand }} {{ television.brand_model }}</h2>
-            <p>Released year: {{ television.tv_released_year }}</p>
-            <p>Screen size: {{ television.tv_screen_size }}"</p>
-            <p>Smart TV: {% if television.smart_tv %}
-                            Yes
+            <p>Modelový rok: {{ television.tv_released_year }}</p>
+            <p>Velikost obrazovky: {{ television.tv_screen_size }}"</p>
+            <p>Chytrá televize: {% if television.smart_tv %}
+                            Ano
                             {% else %}
-                            No
+                            Ne
                             {% endif %}</p>
-            <p>Refresh rate: {{ television.refresh_rate }} Hz</p>
-            <p>Display technology: {{ television.display_technology }}</p>
-            <p>Display resolution: {{ television.display_resolution }}</p>
-            <p>Operation system: {{ television.operation_system }}</p>
-            <a href="{% url 'index' %}" class="btn btn-success">Add to basket</a>
+            <p>Obnovovací frekvence: {{ television.refresh_rate }} Hz</p>
+            <p>Technologie: {{ television.display_technology }}</p>
+            <p>Rozlišení displeje: {{ television.display_resolution }}</p>
+            <p>Operační systém: {{ television.operation_system }}</p>
+            <a href="{% url 'create_order' television.pk%}" class="btn btn-success">Do košíku</a>
             {% if user.is_authenticated and user.is_superuser %}
                 <a href="{% url 'tv_update' television.pk %}" class="btn btn-warning">Edit</a>
                 <a href="{% url 'tv_delete' television.pk %}" class="btn btn-danger">Delete</a>
@@ -69,7 +69,7 @@
         
     </div>
 </div>
-            <h3>Description</h3>
+            <h3>Popis</h3>
             <p>{{ television.description }}</p>
         </div>
 

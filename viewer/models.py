@@ -1,18 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 import datetime
+import uuid
 
 
 class Brand(models.Model):
-    brand_name = models.CharField(max_length=50)
+    brand_name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.brand_name
 
 
 class TVDisplayTechnology(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True)
 
     def __str__(self):
@@ -20,14 +22,14 @@ class TVDisplayTechnology(models.Model):
 
 
 class TVDisplayResolution(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
 
 
 class TVOperationSystem(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
@@ -62,6 +64,64 @@ class Television(models.Model):
         return f'{self.brand} -  {self.brand_model} - {self.tv_screen_size}"'
 
 
+# tridy pro mobil
+class MobileOperationSystem(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class MobileRAM(models.Model):
+    size = models.IntegerField(null=True, blank=True, unique=True)
+
+    def __str__(self):
+        return f"{self.size} GB"
+
+
+class MobileUserMemory(models.Model):
+    size = models.IntegerField(null=True, blank=True, unique=True)
+
+    def __str__(self):
+        return f"{self.size} GB"
+
+
+class MobileConstruction(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class MobileDisplay(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class MobilePhone(models.Model):
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    mobile_model = models.CharField(max_length=50)
+    mobile_released_year = models.IntegerField(validators=[
+        MinValueValidator(2010),
+        MaxValueValidator(datetime.date.today().year)
+    ])
+    mobile_screen_size = models.DecimalField(max_digits=2, decimal_places=2)
+    smart_phone = models.BooleanField(default=True)
+    ram = models.ForeignKey(MobileRAM, on_delete=models.CASCADE)
+    user_memory = models.ForeignKey(MobileUserMemory, on_delete=models.CASCADE)
+    construction = models.ForeignKey(MobileConstruction, on_delete=models.CASCADE)
+    display = models.ForeignKey(MobileDisplay, on_delete=models.CASCADE)
+    description = models.TextField(blank=True)
+    categories = models.ManyToManyField(Category, related_name="mobile_phone", blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], default=0.00)
+    image = models.ImageField(upload_to='mobile_phone_images/', blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.brand} -  {self.mobile_model}'
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     biography = models.TextField()
@@ -69,3 +129,39 @@ class Profile(models.Model):
     @property
     def email(self):
         return self.user.email
+
+
+class Order(models.Model):
+    ORDER_STATUS_CHOICES = [
+        ('submitted', 'Submitted'),
+        ('pending_payment', 'Pending Payment'),
+        ('processing', 'Processing'),
+        ('on_hold', 'On Hold'),
+        ('dispatched', 'Dispatched'),
+        ('delivered', 'Delivered'),
+        ('cancelled', 'Cancelled'),
+        ('refunded', 'Refunded'),
+        ('returned', 'Returned'),
+        ('completed', 'Completed'),
+    ]
+
+    order_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    television = models.ManyToManyField(Television)
+    mobile_phone = models.ManyToManyField(MobilePhone)
+    order_date = models.DateTimeField(auto_now_add=True)
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=30, blank=True)
+    address = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    zip_code = models.CharField(max_length=20, blank=True)
+    phone_number = models.CharField(max_length=20, blank=True)
+    status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='submitted')
+
+    def __str__(self):
+        return f"Order #{self.order_id} by {self.user.username}"
+
+    # Ověření, že objednávka obsahuje alespoň 1x TV nebo 1x mobil
+    def clean(self):
+        if not self.television.exists() and not self.mobile_phone.exists():
+            raise ValidationError('V objednavce musi byt alespon televize nebo mobil')
