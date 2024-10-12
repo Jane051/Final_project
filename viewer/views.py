@@ -5,9 +5,14 @@ from django.views.generic import TemplateView, DetailView, ListView, CreateView,
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from viewer.models import Television, MobilePhone, Order
+from django.contrib.auth import login
+from viewer.models import Television, Profile
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
 from viewer.forms import TVForm, CustomAuthenticationForm, CustomPasswordChangeForm, OrderForm
+from viewer.forms import TVForm, CustomAuthenticationForm, CustomPasswordChangeForm, ProfileForm, SignUpForm
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 logger = logging.getLogger(__name__)
 
@@ -172,6 +177,30 @@ class FilteredTelevisionListView(ListView):
         return context
 
 
+@login_required
+def edit_profile(request):
+    profile = Profile.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile_detail')
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'edit_profile.html', {'form': form})
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # Automatically log the user in after registration
+            return redirect('home')
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
 class MobileListView(ListView):
     template_name = 'mobile_list.html'
     model = MobilePhone

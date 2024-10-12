@@ -123,12 +123,42 @@ class MobilePhone(models.Model):
 
 
 class Profile(models.Model):
+    ROLE_CHOICES = [
+        ('ADMINISTRATOR', 'Administrator'),
+        ('USER', 'User'),
+    ]
+
+    COMMUNICATION_CHANNEL_CHOICES = [
+        ('POST', 'Pošta'),
+        ('EMAIL', 'Email'),
+        ('TELEPHONE', 'Telefon'),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    biography = models.TextField()
+    first_name = models.CharField(null=True, max_length=50)
+    last_name = models.CharField(null=True, max_length=50)
+    phone_number = models.CharField(
+        max_length=14,
+        validators=[
+            RegexValidator(regex='^\+?\d+$', message='Nesprávný formát čísla.'),
+            MinLengthValidator(9, message='Telefonní číslo musí mít alespoň 9 znaků.')
+        ],
+        blank=True
+    )
+    date_of_birth = models.DateField(null=True, blank=True)
+    address = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=25, blank=True)
+    zipcode = models.CharField(max_length=5, blank=True)
+    avatar = models.ImageField(upload_to='profile_pics', blank=True, null=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='USER')
+    communication_channel = models.CharField(max_length=10, choices=COMMUNICATION_CHANNEL_CHOICES, default='EMAIL')
 
     @property
     def email(self):
         return self.user.email
+
+    def __str__(self):
+        return f'{self.user.username} Profile'
 
 
 class Order(models.Model):
