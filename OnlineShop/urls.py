@@ -15,15 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from viewer.views import (BaseView, IndexView, TVDetailView, TVListView, TVCreateView, TVUpdateView, TVDeleteView,
-                          FilteredTelevisionListView, ProfileView, SubmittableLoginView, CustomLogoutView,
-                          SubmittablePasswordChangeView, edit_profile, signup)
-from viewer.models import Television, Brand, TVOperationSystem, TVDisplayResolution, TVDisplayTechnology
+
 from viewer.views import (BaseView, TVDetailView, TVListView, TVCreateView, TVUpdateView, TVDeleteView,
                           FilteredTelevisionListView, ProfileView, SubmittableLoginView, CustomLogoutView,
-                          SubmittablePasswordChangeView, MobileListView, CreateOrderView)
-from viewer.models import (Profile, Television, Brand, TVOperationSystem, TVDisplayResolution, TVDisplayTechnology, MobilePhone,
-                           MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM, MobileOperationSystem
+                          SubmittablePasswordChangeView, MobileListView, CreateOrderView, OrderSuccessView,
+                          OrderListView, OrderDetailView, AddToCartView, RemoveFromCartView, CartView, edit_profile,
+                          signup)
+from viewer.models import (Profile, Television, Brand, TVOperationSystem, TVDisplayResolution, TVDisplayTechnology,
+                           MobilePhone, MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM,
+                           MobileOperationSystem
                            )
 
 from django.conf import settings
@@ -33,30 +33,38 @@ admin.site.register([Television, Brand, TVDisplayResolution, TVDisplayTechnology
                      MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM, MobileOperationSystem, Profile])
 
 urlpatterns = [
+    path('', BaseView.as_view(), name='home'),
     path('admin/', admin.site.urls),
     path('login/', SubmittableLoginView.as_view(), name='login'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
     path('signup/', signup, name='signup'),
     path('profile/', ProfileView.as_view(), name='profile_detail'),
+    path('profile/edit/', edit_profile, name='edit_profile'),
     path('password_change/', SubmittablePasswordChangeView.as_view(), name='password_change'),
-    path('', BaseView.as_view(), name='home'),
-    path('index', IndexView.as_view(), name='index'),
-    path('tv/list', TVListView.as_view(), name='tv_list'),
-    path('tv/create', TVCreateView.as_view(), name='tv_create'),
+    # ----------------TV sekce----------------
+    path('tv/list/', TVListView.as_view(), name='tv_list'),
+    path('tv/create/', TVCreateView.as_view(), name='tv_create'),
     path('tv/update/<pk>', TVUpdateView.as_view(), name='tv_update'),
     path('tv/delete/<pk>', TVDeleteView.as_view(), name='tv_delete'),
-    path('tv/detail/<pk>', TVDetailView.as_view(), name='tv_detail'),
-    path('tv/<str:smart_tv>/', FilteredTelevisionListView.as_view(), name='filtered_smart_tv'),
+    path('tv/<pk>', TVDetailView.as_view(), name='tv_detail'),
+    path('tv/detail/<str:smart_tv>/', FilteredTelevisionListView.as_view(), name='filtered_smart_tv'),
     path('tv/technology/<str:technology>/', FilteredTelevisionListView.as_view(), name='filtered_tv_by_technology'),
     path('tv/resolution/<str:resolution>/', FilteredTelevisionListView.as_view(), name='filtered_tv_by_resolution'),
     path('tv/oper-system/<str:op_system>/', FilteredTelevisionListView.as_view(), name='filtered_tv_by_op_system'),
     path('tv/brand/<str:brand>/technology/<str:technology>/', FilteredTelevisionListView.as_view(),
          name='filtered_tv_by_brand_and_technology'),
-    # Mobil vetev
+    # ----------------Mobil sekce----------------
     path('mobile', MobileListView.as_view(), name='mobile_list'),
-    # Order vetev
+    # ----------------Order sekce----------------
     path('order/create/<int:television_id>/', CreateOrderView.as_view(), name='create_order'),
-    path('profile/edit/', edit_profile, name='edit_profile'),
+    path('order/success/<int:order_id>/', OrderSuccessView.as_view(), name='order_success'),
+    path('orders/', OrderListView.as_view(), name='order_list'),
+    path('order/<int:order_id>/', OrderDetailView.as_view(), name='order_detail'),
+    # ----------------Kosik sekce----------------
+    path('cart/add/<int:television_id>/', AddToCartView.as_view(), name='add_to_cart'),
+    path('cart/remove/<int:television_id>/', RemoveFromCartView.as_view(), name='remove_from_cart'),
+    path('cart/', CartView.as_view(), name='view_cart'),
+
 ]
 
 if settings.DEBUG:

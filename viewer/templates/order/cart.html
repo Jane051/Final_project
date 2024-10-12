@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Váš košík</h2>
+    <ul>
+        {% for television_id, item in cart.items %}
+            <li>
+                <div>{{ item.name }} {{ item.model }} za {{ item.price }} Kč</div>
+                <a href="{% url 'add_to_cart' television_id %}" class="btn btn-success">Do košíku</a>
+                <form action="{% url 'remove_from_cart' television_id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit">-</button> {#  Jeste nefunguje #}
+                </form>
+                <form action="{% url 'add_to_cart' television_id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit">+</button> {#  Jeste nefunguje #}
+                </form>
+                <div></div>Množství v košíku {{ item.quantity }} x</li>
+        {% endfor %}
+    </ul>
+    <p>Počet položek: {{ total_items }}</p>
+    <p>Celková cena: {{ total_price }} Kč</p>
+{#    <a href="{% url 'checkout' %}">Přejít na kontaktní údaje</a>#}
+{% endblock %}
+

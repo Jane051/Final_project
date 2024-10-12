@@ -1,17 +1,14 @@
 import logging
 
 from django.http import Http404
-from django.views.generic import TemplateView, DetailView, ListView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
+from django.views.generic import TemplateView, DetailView, ListView, CreateView, UpdateView, DeleteView, View
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
-from viewer.models import Television, MobilePhone, Order
+from viewer.models import Television, MobilePhone, Order, Profile
 from django.contrib.auth import login
-from viewer.models import Television, Profile
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, redirect
-from viewer.forms import TVForm, CustomAuthenticationForm, CustomPasswordChangeForm, OrderForm
-from viewer.forms import TVForm, CustomAuthenticationForm, CustomPasswordChangeForm, ProfileForm, SignUpForm
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, redirect, render
+from viewer.forms import TVForm, CustomAuthenticationForm, CustomPasswordChangeForm, ProfileForm, SignUpForm, OrderForm
 from django.contrib.auth.decorators import login_required
 
 logger = logging.getLogger(__name__)
@@ -191,6 +188,7 @@ def edit_profile(request):
 
     return render(request, 'edit_profile.html', {'form': form})
 
+
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -201,6 +199,8 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
+
+
 class MobileListView(ListView):
     template_name = 'mobile_list.html'
     model = MobilePhone
@@ -210,7 +210,7 @@ class MobileListView(ListView):
 class CreateOrderView(LoginRequiredMixin, CreateView):
     model = Order
     form_class = OrderForm
-    template_name = 'create_order.html'
+    template_name = 'order/create_order.html'
 
     def get_televison(self):
         # Získání televize podle ID předaného v URL
@@ -239,3 +239,98 @@ class CreateOrderView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['television'] = self.get_televison()
         return context
+
+
+class OrderSuccessView(DetailView):
+    model = Order
+    template_name = 'order/order_success.html'
+    context_object_name = 'order'
+
+    def get_object(self):
+        # Získáme objednávku podle order_id předaného v URL
+        return get_object_or_404(Order, order_id=self.kwargs['order_id'])
+
+
+class OrderListView(LoginRequiredMixin, ListView):
+    model = Order
+    template_name = 'order/order_list.html'
+    context_object_name = 'orders'
+
+    def get_queryset(self):
+        # Zobrazí pouze objednávky aktuálně přihlášeného uživatele
+        return Order.objects.filter(user=self.request.user)
+
+
+class OrderDetailView(LoginRequiredMixin, DetailView):
+    model = Order
+    template_name = 'order/order_detail.html'
+    context_object_name = 'order'
+
+    def get_object(self):
+        # Získáme objednávku podle order_id předaného v URL
+        return get_object_or_404(Order, order_id=self.kwargs['order_id'])
+
+
+class AddToCartView(View):
+    def get(self, request, television_id):
+        # Získáme televizi podle ID
+        television = get_object_or_404(Television, id=television_id)
+
+        # Inicializujeme košík, pokud ještě neexistuje
+        cart = request.session.get('cart', {})
+
+        # v teto casti to bez prevedeni na str nenavysovalo pocet v kosiku
+        # protoze "V session (která je založena na JSON-u), klíče jsou obvykle řetězce..."
+        if str(television_id) in cart:
+            cart[str(television_id)]['quantity'] += 1
+        else:
+            cart[television_id] = {'name': television.brand.brand_name,
+                                   'model': television.brand_model,
+                                   'price': str(television.price),
+                                   'quantity': 1}
+
+        # Uložíme košík do session
+        request.session['cart'] = cart
+
+        # Přesměrujeme zpět na stránku detailu televize
+        # redirect bude muset být rozdělený, podle toho jestli přidávám tv z košiku nebo z detailu televize
+
+        return redirect('tv_detail', pk=television_id)
+
+
+class RemoveFromCartView(View):
+    def post(self, request, television_id):
+        # Získání košíku ze session
+        cart = request.session.get('cart', {})
+
+        # Pokud existuje položka v košíku, snižte její množství
+        if str(television_id) in cart:
+            if cart[str(television_id)]['quantity'] > 1:
+                cart[str(television_id)]['quantity'] -= 1
+            else:
+                # Pokud je množství 1, odstraňte položku z košíku
+                del cart[str(television_id)]
+
+        # Uložíme košík do session
+        request.session['cart'] = cart
+
+        # Přesměrujeme zpět na stránku košíku
+        return redirect('view_cart')
+
+
+class CartView(View):
+    template_name = 'order/cart.html'
+
+    def get(self, request):
+        # Získání košíku ze session
+        cart = request.session.get('cart', {})
+
+        # Výpočet celkové ceny a počtu položek
+        total_price = sum(float(item['price']) * int(item['quantity']) for item in cart.values())
+        total_items = sum(int(item['quantity']) for item in cart.values())
+
+        return render(request, self.template_name, {
+            'cart': cart,
+            'total_price': total_price,
+            'total_items': total_items,
+        })

@@ -1,7 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
-from django.forms import CharField, Textarea, ModelForm
-from viewer.models import Profile, Television
-from django.db.transaction import atomic
+from viewer.models import Profile, Television, MobilePhone, Order
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
@@ -120,7 +118,7 @@ class OrderForm(forms.ModelForm):
 
     class Meta:
         model = Order
-        fields = ['first_name', 'last_name', 'address', 'city', 'zip_code', 'phone_number',
+        fields = ['first_name', 'last_name', 'address', 'city', 'zipcode', 'phone_number',
                   'use_profile_data']
 
     def __init__(self, *args, **kwargs):
@@ -133,7 +131,7 @@ class OrderForm(forms.ModelForm):
             self.fields['last_name'].initial = profile.last_name
             self.fields['address'].initial = profile.address
             self.fields['city'].initial = profile.city
-            self.fields['zip_code'].initial = profile.zip_code
+            self.fields['zipcode'].initial = profile.zipcode
             self.fields['phone_number'].initial = profile.phone_number
 
     def save(self, commit=True):
@@ -144,18 +142,12 @@ class OrderForm(forms.ModelForm):
             order.last_name = profile.last_name
             order.address = profile.address
             order.city = profile.city
-            order.zip_code = profile.zip_code
+            order.zipcode = profile.zipcode
             order.phone_number = profile.phone_number
 
         if commit:
             order.save()
         return order
-
-
-class TVForm(ModelForm):
-    class Meta:
-        model = Television
-        fields = '__all__'
 
 
 class ProfileForm(forms.ModelForm):

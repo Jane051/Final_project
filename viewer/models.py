@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator, RegexValidator
 import datetime
 import uuid
 
@@ -184,7 +184,7 @@ class Order(models.Model):
     last_name = models.CharField(max_length=30, blank=True)
     address = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100, blank=True)
-    zip_code = models.CharField(max_length=20, blank=True)
+    zipcode = models.CharField(max_length=20, blank=True)
     phone_number = models.CharField(max_length=20, blank=True)
     status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='submitted')
 

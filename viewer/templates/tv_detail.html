@@ -34,7 +34,7 @@
             <p>Technologie: {{ television.display_technology }}</p>
             <p>Rozlišení displeje: {{ television.display_resolution }}</p>
             <p>Operační systém: {{ television.operation_system }}</p>
-            <a href="{% url 'create_order' television.pk%}" class="btn btn-success">Do košíku</a>
+            <a href="{% url 'add_to_cart' television.pk %}" class="btn btn-success">Do košíku</a>
             {% if user.is_authenticated and user.is_superuser %}
                 <a href="{% url 'tv_update' television.pk %}" class="btn btn-warning">Edit</a>
                 <a href="{% url 'tv_delete' television.pk %}" class="btn btn-danger">Delete</a>
