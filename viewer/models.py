@@ -176,7 +176,7 @@ class Order(models.Model):
     ]
 
     order_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='orders')
     television = models.ManyToManyField(Television)
     mobile_phone = models.ManyToManyField(MobilePhone)
     order_date = models.DateTimeField(auto_now_add=True)
@@ -189,7 +189,7 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='submitted')
 
     def __str__(self):
-        return f"Order #{self.order_id} by {self.user.username}"
+        return f"Order #{self.order_id} by {self.user}"
 
     # Ověření, že objednávka obsahuje alespoň 1x TV nebo 1x mobil
     def clean(self):

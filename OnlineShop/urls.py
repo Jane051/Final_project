@@ -19,8 +19,8 @@ from django.urls import path
 from viewer.views import (BaseView, TVDetailView, TVListView, TVCreateView, TVUpdateView, TVDeleteView,
                           FilteredTelevisionListView, ProfileView, SubmittableLoginView, CustomLogoutView,
                           SubmittablePasswordChangeView, MobileListView, CreateOrderView, OrderSuccessView,
-                          OrderListView, OrderDetailView, AddToCartView, RemoveFromCartView, CartView, edit_profile,
-                          signup)
+                          OrderListView, OrderDetailView, AddToCartView, RemoveFromCartView, CartView, CheckoutView,
+                          edit_profile, signup)
 from viewer.models import (Profile, Television, Brand, TVOperationSystem, TVDisplayResolution, TVDisplayTechnology,
                            MobilePhone, MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM,
                            MobileOperationSystem
@@ -57,13 +57,14 @@ urlpatterns = [
     path('mobile', MobileListView.as_view(), name='mobile_list'),
     # ----------------Order sekce----------------
     path('order/create/<int:television_id>/', CreateOrderView.as_view(), name='create_order'),
-    path('order/success/<int:order_id>/', OrderSuccessView.as_view(), name='order_success'),
     path('orders/', OrderListView.as_view(), name='order_list'),
     path('order/<int:order_id>/', OrderDetailView.as_view(), name='order_detail'),
     # ----------------Kosik sekce----------------
     path('cart/add/<int:television_id>/', AddToCartView.as_view(), name='add_to_cart'),
     path('cart/remove/<int:television_id>/', RemoveFromCartView.as_view(), name='remove_from_cart'),
     path('cart/', CartView.as_view(), name='view_cart'),
+    path('checkout/', CheckoutView.as_view(), name='checkout'),
+    path('order/success/<uuid:order_id>/', OrderSuccessView.as_view(), name='order_success'),
 
 ]
 

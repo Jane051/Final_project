@@ -292,10 +292,11 @@ class AddToCartView(View):
         # Uložíme košík do session
         request.session['cart'] = cart
 
-        # Přesměrujeme zpět na stránku detailu televize
-        # redirect bude muset být rozdělený, podle toho jestli přidávám tv z košiku nebo z detailu televize
-
-        return redirect('tv_detail', pk=television_id)
+        # Kontrola, zda přidáváme z košíku nebo ze stránky televize
+        if 'from_cart' in request.GET:
+            return redirect('view_cart')  # Přesměrování zpět na stránku košíku
+        else:
+            return redirect('tv_detail', pk=television_id)  # Přesměrování zpět na stránku televize
 
 
 class RemoveFromCartView(View):
@@ -334,3 +335,50 @@ class CartView(View):
             'total_price': total_price,
             'total_items': total_items,
         })
+
+
+# views.py
+class CheckoutView(LoginRequiredMixin, View):
+    template_name = 'order/checkout.html'
+
+    def get(self, request):
+        # Inicializace formuláře s údaji uživatele (pokud jsou dostupné)
+        initial_data = {
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+            'address': request.user.profile.address if hasattr(request.user, 'profile') else '',
+            'city': request.user.profile.city if hasattr(request.user, 'profile') else '',
+            'zipcode': request.user.profile.zipcode if hasattr(request.user, 'profile') else '',
+            'phone_number': request.user.profile.phone_number if hasattr(request.user, 'profile') else '',
+        }
+        # Předání uživatele do formuláře
+        form = OrderForm(initial=initial_data, user=request.user)
+
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        # Předání uživatele do formuláře
+        form = OrderForm(request.POST, user=request.user)
+        if form.is_valid():
+            # Vytvoření objednávky
+            order = form.save(commit=False)
+            # Nejprve přiřadíme uživatele
+            order.user = request.user
+            print(f"Order User after assignment: {order.user}")
+
+            # Přidání položek z košíku do objednávky
+            cart = request.session.get('cart', {})
+            for television_id in cart:
+                television = Television.objects.get(id=television_id)
+                order.television.add(television)
+
+            order.status = 'submitted'
+            order.save()
+
+            # Vyčištění košíku
+            request.session['cart'] = {}
+
+            # Přesměrování na úspěšnou objednávku
+            return redirect('order_success', order_id=order.order_id)
+
+        return render(request, self.template_name, {'form': form})
