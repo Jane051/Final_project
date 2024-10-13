@@ -3,6 +3,7 @@ from viewer.models import Profile, Television, MobilePhone, Order
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 import re
 
 
@@ -133,6 +134,11 @@ class OrderForm(forms.ModelForm):
             self.fields['city'].initial = profile.city
             self.fields['zipcode'].initial = profile.zipcode
             self.fields['phone_number'].initial = profile.phone_number
+
+    #def clean(self):
+    #    if not self.television.exists() and not self.mobile_phone.exists():
+    #        raise ValidationError('V objednavce musi byt alespon televize nebo mobil')
+
 
     def save(self, commit=True):
         order = super(OrderForm, self).save(commit=False)

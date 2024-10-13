@@ -23,14 +23,14 @@ from viewer.views import (BaseView, TVDetailView, TVListView, TVCreateView, TVUp
                           edit_profile, signup)
 from viewer.models import (Profile, Television, Brand, TVOperationSystem, TVDisplayResolution, TVDisplayTechnology,
                            MobilePhone, MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM,
-                           MobileOperationSystem
+                           MobileOperationSystem, Order
                            )
 
 from django.conf import settings
 from django.conf.urls.static import static
 
 admin.site.register([Television, Brand, TVDisplayResolution, TVDisplayTechnology, TVOperationSystem, MobilePhone,
-                     MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM, MobileOperationSystem, Profile])
+                     MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM, MobileOperationSystem, Profile, Order])
 
 urlpatterns = [
     path('', BaseView.as_view(), name='home'),

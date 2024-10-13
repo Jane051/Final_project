@@ -192,6 +192,4 @@ class Order(models.Model):
         return f"Order #{self.order_id} by {self.user}"
 
     # Ověření, že objednávka obsahuje alespoň 1x TV nebo 1x mobil
-    def clean(self):
-        if not self.television.exists() and not self.mobile_phone.exists():
-            raise ValidationError('V objednavce musi byt alespon televize nebo mobil')
+

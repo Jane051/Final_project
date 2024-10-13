@@ -12,7 +12,7 @@
                     {% csrf_token %}
                     <button type="submit">-</button> 
                 </form>
-                <form action="{% url 'add_to_cart' television_id %}" method="post" style="display: inline;">
+                <form action="{% url 'add_to_cart' television_id %}" method="get" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit">+</button> {#  Jeste nefunguje #}
                 </form>
