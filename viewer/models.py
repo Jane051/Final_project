@@ -64,7 +64,6 @@ class Television(models.Model):
         return f'{self.brand} -  {self.brand_model} - {self.tv_screen_size}"'
 
 
-# tridy pro mobil
 class MobileOperationSystem(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
@@ -190,6 +189,3 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order #{self.order_id} by {self.user}"
-
-    # Ověření, že objednávka obsahuje alespoň 1x TV nebo 1x mobil
-

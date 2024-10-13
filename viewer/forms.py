@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
-from viewer.models import Profile, Television, MobilePhone, Order
+from viewer.models import Profile, Television, MobilePhone, Order, Brand
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
@@ -96,6 +96,12 @@ class SignUpForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
+
+
+class BrandForm(forms.ModelForm):
+    class Meta:
+        model = Brand
+        fields = '__all__'
 
 
 class TVForm(forms.ModelForm):

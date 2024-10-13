@@ -1,14 +1,15 @@
 import logging
 
 from django.http import Http404
-from django.views.generic import TemplateView, DetailView, ListView, CreateView, UpdateView, DeleteView, View
+from django.views.generic import TemplateView, DetailView, ListView, CreateView, UpdateView, DeleteView, FormView, View
+from viewer.models import Television, MobilePhone, Order, Profile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
-from viewer.models import Television, MobilePhone, Order, Profile
 from django.contrib.auth import login
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404, redirect, render
-from viewer.forms import TVForm, CustomAuthenticationForm, CustomPasswordChangeForm, ProfileForm, SignUpForm, OrderForm
+from viewer.forms import (TVForm, CustomAuthenticationForm, CustomPasswordChangeForm, ProfileForm, SignUpForm,
+                          OrderForm, BrandForm)
 from django.contrib.auth.decorators import login_required
 
 logger = logging.getLogger(__name__)
@@ -40,6 +41,20 @@ class SubmittablePasswordChangeView(PasswordChangeView):
 class BaseView(TemplateView):
     template_name = 'home.html'
     extra_context = {}
+
+
+class BrandCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    template_name = 'television/brand_create.html'
+    form_class = BrandForm
+    success_url = reverse_lazy('tv_create')
+
+    def test_func(self):
+        # Umožní přístup pouze členům skupiny 'tv_admin' nebo superuživatelům
+        return self.request.user.is_superuser or self.request.user.groups.filter(name='tv_admin').exists()
+
+    def form_invalid(self, form):
+        logger.warning('User provided invalid data.')
+        return super().form_invalid(form)
 
 
 class TVListView(ListView):
@@ -125,14 +140,14 @@ class TVDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     success_url = reverse_lazy('tv_list')
 
     def test_func(self):
-        # Umožní přístup pouze členům skupiny 'tv_admin' nebo superuživatelům
+        """"Umožní přístup pouze členům skupiny 'tv_admin' nebo superuživatelům"""
         return self.request.user.is_superuser or self.request.user.groups.filter(name='tv_admin').exists()
 
 
 class FilteredTelevisionListView(ListView):
     model = Television
     template_name = 'tv_list_filter.html'
-    context_object_name = 'televisions'  # Název kontextu v šabloně
+    context_object_name = 'televisions'
 
     def get_queryset(self):
         queryset = Television.objects.all()  # Základní queryset se všemi televizemi
@@ -145,7 +160,7 @@ class FilteredTelevisionListView(ListView):
         elif smart_tv not in ('smart', 'non-smart', None):
             raise Http404
 
-        # Filtrovaní podle rozliseni(display_resolution)
+        """"Filtrovaní podle rozliseni(display_resolution)"""
         resolution = self.kwargs.get('resolution')
         if resolution:
             queryset = queryset.filter(
@@ -204,83 +219,19 @@ def signup(request):
 class MobileListView(ListView):
     template_name = 'mobile_list.html'
     model = MobilePhone
-    context_object_name = 'object_list'  # Kontext pro šablonu
+    context_object_name = 'object_list'
 
 
-class CreateOrderView(LoginRequiredMixin, CreateView):
-    model = Order
-    form_class = OrderForm
-    template_name = 'order/create_order.html'
-
-    def get_televison(self):
-        # Získání televize podle ID předaného v URL
-        return get_object_or_404(Television, pk=self.kwargs['television_id'])
-
-    def get_form_kwargs(self):
-        # Přidání uživatele do formuláře
-        kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
-
-    def form_valid(self, form):
-        # Neuložíme ještě formulář (commit=False) a upravíme některé jeho hodnoty
-        television = self.get_televison()
-        order = form.save(commit=False)
-        order.user = self.request.user
-        order.television = television
-        order.status = 'submitted'
-        order.save()
-
-        # Po úspěšném uložení přesměrujeme na stránku úspěchu
-        return redirect('order_success', order_id=order.order_id)
-
-    def get_context_data(self, **kwargs):
-        # Přidáme motorku do kontextu pro použití v šabloně
-        context = super().get_context_data(**kwargs)
-        context['television'] = self.get_televison()
-        return context
-
-
-class OrderSuccessView(DetailView):
-    model = Order
-    template_name = 'order/order_success.html'
-    context_object_name = 'order'
-
-    def get_object(self):
-        # Získáme objednávku podle order_id předaného v URL
-        return get_object_or_404(Order, order_id=self.kwargs['order_id'])
-
-
-class OrderListView(LoginRequiredMixin, ListView):
-    model = Order
-    template_name = 'order/order_list.html'
-    context_object_name = 'orders'
-
-    def get_queryset(self):
-        # Zobrazí pouze objednávky aktuálně přihlášeného uživatele
-        return Order.objects.filter(user=self.request.user)
-
-
-class OrderDetailView(LoginRequiredMixin, DetailView):
-    model = Order
-    template_name = 'order/order_detail.html'
-    context_object_name = 'order'
-
-    def get_object(self):
-        # Získáme objednávku podle order_id předaného v URL
-        return get_object_or_404(Order, order_id=self.kwargs['order_id'])
-
-
-class AddToCartView(View):
+class AddToCartView(LoginRequiredMixin, View):
     def get(self, request, television_id):
-        # Získáme televizi podle ID
+        """Získáme televizi podle ID"""
         television = get_object_or_404(Television, id=television_id)
 
-        # Inicializujeme košík, pokud ještě neexistuje
+        """Inicializujeme košík, pokud ještě neexistuje"""
         cart = request.session.get('cart', {})
 
-        # v teto casti to bez prevedeni na str nenavysovalo pocet v kosiku
-        # protoze "V session (která je založena na JSON-u), klíče jsou obvykle řetězce..."
+        """v teto casti to bez prevedeni na str nenavysovalo pocet v kosiku
+        protoze "V session (která je založena na JSON-u), klíče jsou obvykle řetězce..."""
         if str(television_id) in cart:
             cart[str(television_id)]['quantity'] += 1
         else:
@@ -292,41 +243,39 @@ class AddToCartView(View):
         # Uložíme košík do session
         request.session['cart'] = cart
 
-        # Kontrola, zda přidáváme z košíku nebo ze stránky televize
+        """Kontrola, zda přidáváme z košíku nebo ze stránky televize"""
         if 'from_cart' in request.GET:
-            return redirect('view_cart')  # Přesměrování zpět na stránku košíku
+            return redirect('view_cart')
         else:
-            return redirect('tv_detail', pk=television_id)  # Přesměrování zpět na stránku televize
+            return redirect('tv_detail', pk=television_id)
 
 
-class RemoveFromCartView(View):
+class RemoveFromCartView(LoginRequiredMixin, View):
     def post(self, request, television_id):
-        # Získání košíku ze session
+        """Získání košíku ze session"""
         cart = request.session.get('cart', {})
 
-        # Pokud existuje položka v košíku, snižte její množství
+        """Pokud existuje položka v košíku, snižte její množství"""
         if str(television_id) in cart:
             if cart[str(television_id)]['quantity'] > 1:
                 cart[str(television_id)]['quantity'] -= 1
             else:
-                # Pokud je množství 1, odstraňte položku z košíku
+                """Pokud je množství 1, odstraňte položku z košíku"""
                 del cart[str(television_id)]
 
-        # Uložíme košík do session
+        """Uložíme košík do session"""
         request.session['cart'] = cart
-
-        # Přesměrujeme zpět na stránku košíku
         return redirect('view_cart')
 
 
-class CartView(View):
+class CartView(LoginRequiredMixin, View):
     template_name = 'order/cart.html'
 
     def get(self, request):
-        # Získání košíku ze session
+        """Získání košíku ze session"""
         cart = request.session.get('cart', {})
 
-        # Výpočet celkové ceny a počtu položek
+        """Výpočet celkové ceny a počtu položek"""
         total_price = sum(float(item['price']) * int(item['quantity']) for item in cart.values())
         total_items = sum(int(item['quantity']) for item in cart.values())
 
@@ -337,48 +286,135 @@ class CartView(View):
         })
 
 
-# views.py
-class CheckoutView(LoginRequiredMixin, View):
+class CheckoutView(LoginRequiredMixin, FormView):
     template_name = 'order/checkout.html'
+    form_class = OrderForm
 
-    def get(self, request):
-        # Inicializace formuláře s údaji uživatele (pokud jsou dostupné)
-        initial_data = {
-            'first_name': request.user.first_name,
-            'last_name': request.user.last_name,
-            'address': request.user.profile.address if hasattr(request.user, 'profile') else '',
-            'city': request.user.profile.city if hasattr(request.user, 'profile') else '',
-            'zipcode': request.user.profile.zipcode if hasattr(request.user, 'profile') else '',
-            'phone_number': request.user.profile.phone_number if hasattr(request.user, 'profile') else '',
-        }
-        # Předání uživatele do formuláře
-        form = OrderForm(initial=initial_data, user=request.user)
+    """Úspěšné přesměrování po odeslání formuláře"""
+    def get_success_url(self):
+        return reverse('order_success', kwargs={'order_id': self.order.order_id})
 
-        return render(request, self.template_name, {'form': form})
+    """
+    Inicializace formuláře s údaji uživatele
+    """
+    def get_initial(self):
+        initial = super().get_initial()
+        user = self.request.user
 
-    def post(self, request):
-        # Předání uživatele do formuláře
-        form = OrderForm(request.POST, user=request.user)
-        if form.is_valid():
-            # Vytvoření objednávky
-            order = form.save(commit=False)
-            # Nejprve přiřadíme uživatele
-            order.user = request.user
-            print(f"Order User after assignment: {order.user}")
+        initial.update({
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'address': user.profile.address if hasattr(user, 'profile') else '',
+            'city': user.profile.city if hasattr(user, 'profile') else '',
+            'zipcode': user.profile.zipcode if hasattr(user, 'profile') else '',
+            'phone_number': user.profile.phone_number if hasattr(user, 'profile') else '',
+            })
+        return initial
 
-            # Přidání položek z košíku do objednávky
-            cart = request.session.get('cart', {})
-            for television_id in cart:
-                television = Television.objects.get(id=television_id)
-                order.television.add(television)
+    """Předání uživatele do formuláře při jeho inicializaci"""
 
-            order.status = 'submitted'
-            order.save()
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user  # Předáme uživatele do formuláře
+        return kwargs
 
-            # Vyčištění košíku
-            request.session['cart'] = {}
+    """Logika po úspěšném odeslání formuláře (zpracování objednávky)"""
 
-            # Přesměrování na úspěšnou objednávku
-            return redirect('order_success', order_id=order.order_id)
+    def form_valid(self, form):
+        """ Vytvoření objednávky, ale zatím neuložíme """
+        self.order = form.save(commit=False)
+        self.order.user = self.request.user  # Přiřaďte uživatele k objednávce
 
-        return render(request, self.template_name, {'form': form})
+        # Nejprve uložíme objednávku
+        self.order.save()
+
+        """ Zpracování položek z košíku """
+        cart = self.request.session.get('cart', {})
+        for television_id in cart:
+            television = Television.objects.get(id=television_id)
+            self.order.television.add(television)
+
+        """Nastavení stavu objednávky"""
+        self.order.status = 'submitted'
+        self.order.save()
+
+        """Vyčištění košíku"""
+        self.request.session['cart'] = {}
+
+        return super().form_valid(form)
+
+
+class CreateOrderView(LoginRequiredMixin, CreateView):
+    model = Order
+    form_class = OrderForm
+    template_name = 'order/create_order.html'
+
+    def get_televison(self):
+        """Získání televize podle ID předaného v URL"""
+        return get_object_or_404(Television, pk=self.kwargs['television_id'])
+
+    def get_form_kwargs(self):
+        """Přidání uživatele do formuláře"""
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        """Neuložíme ještě formulář (commit=False) a upravíme některé jeho hodnoty"""
+        television = self.get_televison()
+        order = form.save(commit=False)
+        order.user = self.request.user
+        order.television = television
+        order.status = 'submitted'
+        order.save()
+
+        """Po úspěšném uložení přesměrujeme na stránku úspěchu"""
+        return redirect('order_success', order_id=order.order_id)
+
+    def get_context_data(self, **kwargs):
+        """Přidáme TV do kontextu pro použití v šabloně"""
+        context = super().get_context_data(**kwargs)
+        context['television'] = self.get_televison()
+        return context
+
+
+class OrderSuccessView(LoginRequiredMixin, DetailView):
+    model = Order
+    template_name = 'order/order_success.html'
+    context_object_name = 'order'
+
+    def get_object(self):
+        """Získáme objednávku podle order_id předaného v URL"""
+        order = get_object_or_404(Order, order_id=self.kwargs['order_id'])
+
+        """Ověření, zda je uživatel vlastníkem objednávky"""
+        if order.user != self.request.user:
+            # Pokud není, vyvoláme 404 chybu
+            raise Http404("Nemáte oprávnění k zobrazení této objednávky.")
+
+        return order
+
+
+class OrderListView(LoginRequiredMixin, ListView):
+    model = Order
+    template_name = 'order/order_list.html'
+    context_object_name = 'orders'
+
+    def get_queryset(self):
+        """Zobrazí pouze objednávky aktuálně přihlášeného uživatele"""
+        return Order.objects.filter(user=self.request.user)
+
+
+class OrderDetailView(LoginRequiredMixin, DetailView):
+    model = Order
+    template_name = 'order/order_detail.html'
+    context_object_name = 'order'
+
+    def get_object(self):
+        """Získáme objednávku podle order_id předaného v URL"""
+        order = get_object_or_404(Order, order_id=self.kwargs['order_id'])
+
+        """Ověření, zda je uživatel vlastníkem objednávky"""
+        if order.user != self.request.user:
+            raise Http404("Nemáte oprávnění k zobrazení této objednávky.")
+        return order

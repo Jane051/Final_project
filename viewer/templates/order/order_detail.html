@@ -1,10 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block content %}
+    <h2>Objednavka </h2>
+            <div>ID objednávky: "{{ order.order_id }}"</div>
+            <div>Datum: {{ order.order_date  }}</div>
+            <div>Status: {{ order.status  }}</div>
+            <div>Status: {{ order.television  }}</div>
+
+
+{% endblock %}
