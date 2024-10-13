@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Seznam objednávek</h2>
+
+    <ol>
+        {% for order in orders %}
+            <li>
+                <div>ID objednávky: "<a href="{% url 'order_detail' order_id=order.order_id %}">{{ order.order_id }}</a>"</div>
+                <div>Datum: {{ order.order_date  }}</div>
+                <div>{{ cart.total_price }}</div>
+                <div>Status: {{ order.status  }}</div>
+            </li>
+        {% endfor %}
+    </ol>
+{% endblock %}
+

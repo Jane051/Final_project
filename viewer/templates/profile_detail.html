@@ -1,10 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Details</h2>
-    <h4>{{ user.first_name }} {{ user.last_name }}</h4>
-    <p>User: {{ user.username }}</p>
+    <h2>Profil</h2>
+    <div class="mb-4"></div>
+    <h4>{{ user.profile.first_name }} {{ user.profile.last_name }}</h4>
+    <div class="mb-3"></div>
+    <p>Uživatelské jméno: {{ user.username }}</p>
     <p>Email: {{ user.email }}</p>
-    <p>Registered since {{ user.date_joined|date:"d.m.Y" }}</p>
-    <a href="{% url 'password_change' %}" class="btn btn-warning">Change password</a>
+    <p>Datum narození: {{ user.profile.date_of_birth|date:"d.m.Y"|default:"" }}</p>
+    <p>Telefon: {{ user.profile.phone_number|default:"" }}</p>
+    <p>Adresa: {{ user.profile.address|default:""  }}</p>
+    <p>Město: {{ user.profile.city|default:""  }}</p>
+    <p>PSČ: {{ user.profile.zipcode|default:""  }}</p>
+    <p>Datum registrace: {{ user.date_joined|date:"d.m.Y" }}</p>
+    <a href="{% url 'password_change' %}" class="btn btn-warning">Změna hesla</a>
+    <!-- Edit Profile Button -->
+    <a href="{% url 'edit_profile' %}" class="btn btn-primary">Upravit profil</a>
+    <!-- Edit Profile Button -->
+    <a href="{% url 'order_list' %}" class="btn btn-info">Seznam objednávek</a>
 {% endblock %}
+
+
+
