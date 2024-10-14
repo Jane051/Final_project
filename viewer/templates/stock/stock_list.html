@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Seznam položek na skladě</h2>
+    <ol>
+        {% for item in items %}
+            <li>
+                <div>{{ item.television_id  }} - {{ item.quantity }} KS</div>
+            </li>
+        {% endfor %}
+    <ol>
+{% endblock %}

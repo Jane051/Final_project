@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator, RegexValidator
 import datetime
 import uuid
@@ -121,6 +120,14 @@ class MobilePhone(models.Model):
         return f'{self.brand} -  {self.mobile_model}'
 
 
+class ItemsOnStock(models.Model):
+    television_id = models.ForeignKey(Television, on_delete=models.CASCADE)
+    quantity = models.IntegerField(validators=[MinValueValidator(0)])
+
+    def __str__(self):
+        return f'{self.quantity}x {self.television_id}'
+
+
 class Profile(models.Model):
     ROLE_CHOICES = [
         ('ADMINISTRATOR', 'Administrator'),
@@ -179,6 +186,7 @@ class Order(models.Model):
     television = models.ManyToManyField(Television)
     mobile_phone = models.ManyToManyField(MobilePhone)
     order_date = models.DateTimeField(auto_now_add=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
     address = models.CharField(max_length=100, blank=True)

@@ -14,9 +14,11 @@
                 </a>
             </div>
             <div class="navbar-nav">
-                <a class="nav-item nav-link active" href="{% url 'mobile_list' %}">
-                    Mobily
+                {% if user.is_superuser or stock_admin %}
+                <a class="nav-item nav-link active" href="{% url 'stock_list' %}">
+                    Sklad
                 </a>
+                {% endif %}
             </div>
         </div>
         <div class="navbar-nav ml-auto">

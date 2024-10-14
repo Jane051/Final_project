@@ -2,7 +2,7 @@ import logging
 
 from django.http import Http404
 from django.views.generic import TemplateView, DetailView, ListView, CreateView, UpdateView, DeleteView, FormView, View
-from viewer.models import Television, MobilePhone, Order, Profile
+from viewer.models import Television, MobilePhone, ItemsOnStock,  Order, Profile, ItemsOnStock
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.contrib.auth import login
@@ -100,8 +100,14 @@ class TVDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        # Kontrola, zda uživatel patří do skupiny 'tv_admin', pokud je přihlášen (pro podminkovani v html)
+        """Kontrola, zda uživatel patří do skupiny 'tv_admin', pokud je přihlášen (pro podminkovani v html)"""
         context['is_tv_admin'] = user.groups.filter(name='tv_admin').exists()
+
+        """Načtení zásob spojených s konkrétní televizí"""
+        television = self.get_object()  # Získáme aktuální instanci Television
+        """First zde mám, abych nemusel pracovat s QuerySetem"""
+        item_on_stock = ItemsOnStock.objects.filter(television_id=television).first()
+        context['item_on_stock'] = item_on_stock
         return context
 
 
@@ -187,6 +193,16 @@ class FilteredTelevisionListView(ListView):
         context['selected_technology'] = self.kwargs.get('technology', 'All')
         context['selected_op_system'] = self.kwargs.get('op_system', 'All')
         return context
+
+
+class StockListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = ItemsOnStock
+    template_name = 'stock/stock_list.html'
+    context_object_name = 'items'
+
+    def test_func(self):
+        """"Umožní přístup pouze členům skupiny 'stock_admin' nebo superuživatelům"""
+        return self.request.user.is_superuser or self.request.user.groups.filter(name='stock_admin').exists()
 
 
 @login_required

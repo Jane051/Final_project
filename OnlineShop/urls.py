@@ -20,17 +20,18 @@ from viewer.views import (BaseView, TVDetailView, TVListView, TVCreateView, TVUp
                           FilteredTelevisionListView, ProfileView, SubmittableLoginView, CustomLogoutView,
                           SubmittablePasswordChangeView, MobileListView, CreateOrderView, OrderSuccessView,
                           OrderListView, OrderDetailView, AddToCartView, RemoveFromCartView, CartView, CheckoutView,
-                          edit_profile, signup, BrandCreateView)
+                          edit_profile, signup, BrandCreateView, StockListView)
 from viewer.models import (Profile, Television, Brand, TVOperationSystem, TVDisplayResolution, TVDisplayTechnology,
                            MobilePhone, MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM,
-                           MobileOperationSystem, Order
+                           MobileOperationSystem, Order, ItemsOnStock
                            )
 
 from django.conf import settings
 from django.conf.urls.static import static
 
 admin.site.register([Television, Brand, TVDisplayResolution, TVDisplayTechnology, TVOperationSystem, MobilePhone,
-                     MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM, MobileOperationSystem, Profile, Order])
+                     MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM, MobileOperationSystem, Profile,
+                     Order, ItemsOnStock])
 
 urlpatterns = [
     path('', BaseView.as_view(), name='home'),
@@ -57,6 +58,8 @@ urlpatterns = [
          name='filtered_tv_by_brand_and_technology'),
     # ----------------Mobil sekce----------------
     path('mobile', MobileListView.as_view(), name='mobile_list'),
+    # ----------------Sklad sekce----------------
+    path('stock', StockListView.as_view(), name='stock_list'),
     # ----------------Cart & Order sekce----------------
     path('cart/add/<int:television_id>/', AddToCartView.as_view(), name='add_to_cart'),
     path('cart/remove/<int:television_id>/', RemoveFromCartView.as_view(), name='remove_from_cart'),
