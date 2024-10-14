@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from viewer.forms import (TVForm, CustomAuthenticationForm, CustomPasswordChangeForm, ProfileForm, SignUpForm,
                           OrderForm, BrandForm)
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,22 @@ class SubmittablePasswordChangeView(PasswordChangeView):
 class BaseView(TemplateView):
     template_name = 'home.html'
     extra_context = {}
+
+
+class SearchResultsView(ListView):
+    template_name = 'search_results.html'
+    model = Television
+    context_object_name = 'search_results'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            return Television.objects.filter(
+                Q(brand__brand_name__icontains=query) |  # Vyhledávání podle Brand name
+                Q(display_technology__name__icontains=query) | # Vyhledávání podle Display technology
+                Q(brand_model__icontains=query) # Vyhledávání podle Brand model
+            )
+        return Television.objects.none()  # Vrací prázdný queryset pokud není žádný k dispozici
 
 
 class BrandCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):

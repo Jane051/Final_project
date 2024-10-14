@@ -20,7 +20,7 @@ from viewer.views import (BaseView, TVDetailView, TVListView, TVCreateView, TVUp
                           FilteredTelevisionListView, ProfileView, SubmittableLoginView, CustomLogoutView,
                           SubmittablePasswordChangeView, MobileListView, CreateOrderView, OrderSuccessView,
                           OrderListView, OrderDetailView, AddToCartView, RemoveFromCartView, CartView, CheckoutView,
-                          edit_profile, signup, BrandCreateView)
+                          edit_profile, signup, BrandCreateView, SearchResultsView)
 from viewer.models import (Profile, Television, Brand, TVOperationSystem, TVDisplayResolution, TVDisplayTechnology,
                            MobilePhone, MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM,
                            MobileOperationSystem, Order
@@ -35,6 +35,7 @@ admin.site.register([Television, Brand, TVDisplayResolution, TVDisplayTechnology
 urlpatterns = [
     path('', BaseView.as_view(), name='home'),
     path('admin/', admin.site.urls),
+    path('search/', SearchResultsView.as_view(), name='search_results'),
     # ----------------Profil sekce----------------
     path('login/', SubmittableLoginView.as_view(), name='login'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
