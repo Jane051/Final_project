@@ -11,19 +11,20 @@ from django.shortcuts import get_object_or_404, redirect, render
 from viewer.forms import (TVForm, CustomAuthenticationForm, CustomPasswordChangeForm, ProfileForm, SignUpForm,
                           OrderForm, BrandForm)
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 logger = logging.getLogger(__name__)
 
 
 class ProfileView(LoginRequiredMixin, TemplateView):
-    template_name = 'profile_detail.html'
+    template_name = 'user/profile_detail.html'
 
     def get_context_data(self, **kwargs):
         return {**super().get_context_data(), 'object': self.request.user}
 
 
 class SubmittableLoginView(LoginView):
-    template_name = 'login_form.html'
+    template_name = 'user/login_form.html'
     form_class = CustomAuthenticationForm
     next_page = reverse_lazy('home')
 
@@ -33,7 +34,7 @@ class CustomLogoutView(LogoutView):
 
 
 class SubmittablePasswordChangeView(PasswordChangeView):
-    template_name = 'password_change_form.html'
+    template_name = 'user/password_change_form.html'
     success_url = reverse_lazy('profile_detail')
     form_class = CustomPasswordChangeForm
 
@@ -41,6 +42,22 @@ class SubmittablePasswordChangeView(PasswordChangeView):
 class BaseView(TemplateView):
     template_name = 'home.html'
     extra_context = {}
+
+
+class SearchResultsView(ListView):
+    template_name = 'search_results.html'
+    model = Television
+    context_object_name = 'search_results'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            return Television.objects.filter(
+                Q(brand__brand_name__icontains=query) |  # Vyhledávání podle Brand name
+                Q(display_technology__name__icontains=query) | # Vyhledávání podle Display technology
+                Q(brand_model__icontains=query) # Vyhledávání podle Brand model
+            )
+        return Television.objects.none()  # Vrací prázdný queryset pokud není žádný k dispozici
 
 
 class BrandCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -58,7 +75,7 @@ class BrandCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
 
 class TVListView(ListView):
-    template_name = 'tv_list.html'
+    template_name = 'television/tv_list.html'
     model = Television
     context_object_name = 'object_list'  # Kontext pro šablonu
 
@@ -94,7 +111,7 @@ class TVListView(ListView):
 
 
 class TVDetailView(DetailView):
-    template_name = 'tv_detail.html'
+    template_name = 'television/tv_detail.html'
     model = Television
 
     def get_context_data(self, **kwargs):
@@ -112,7 +129,7 @@ class TVDetailView(DetailView):
 
 
 class TVCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    template_name = 'tv_creation.html'
+    template_name = 'television/tv_creation.html'
     form_class = TVForm
     success_url = reverse_lazy('tv_list')
 
@@ -126,7 +143,7 @@ class TVCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
 
 class TVUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    template_name = 'tv_creation.html'
+    template_name = 'television/tv_creation.html'
     model = Television
     form_class = TVForm
     success_url = reverse_lazy('tv_list')
@@ -141,7 +158,7 @@ class TVUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 class TVDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    template_name = 'tv_delete.html'
+    template_name = 'television/tv_delete.html'
     model = Television
     success_url = reverse_lazy('tv_list')
 
@@ -152,7 +169,7 @@ class TVDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 class FilteredTelevisionListView(ListView):
     model = Television
-    template_name = 'tv_list_filter.html'
+    template_name = 'television/tv_list_filter.html'
     context_object_name = 'televisions'
 
     def get_queryset(self):
@@ -217,7 +234,7 @@ def edit_profile(request):
     else:
         form = ProfileForm(instance=profile)
 
-    return render(request, 'edit_profile.html', {'form': form})
+    return render(request, 'user/edit_profile.html', {'form': form})
 
 
 def signup(request):
@@ -229,7 +246,7 @@ def signup(request):
             return redirect('home')
     else:
         form = SignUpForm()
-    return render(request, 'signup.html', {'form': form})
+    return render(request, 'user/signup.html', {'form': form})
 
 
 class MobileListView(ListView):

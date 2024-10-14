@@ -19,7 +19,22 @@
                     Sklad
                 </a>
                 {% endif %}
+            <!-- Search form -->
+            <div class="mx-auto">
+                <form action="{% url 'search_results' %}" method="GET" class="form-inline">
+                    <div class="input-group">
+                        <label>
+                            <input type="text" class="form-control" placeholder="Hledat" required name="q">
+                        </label>
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-outline-secondary" aria-label="Search">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
+
         </div>
         <div class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
