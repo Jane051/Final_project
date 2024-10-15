@@ -2,14 +2,14 @@ import logging
 
 from django.http import Http404
 from django.views.generic import TemplateView, DetailView, ListView, CreateView, UpdateView, DeleteView, FormView, View
-from viewer.models import Television, MobilePhone, ItemsOnStock,  Order, Profile, ItemsOnStock
+from viewer.models import Television, MobilePhone, ItemsOnStock,  Order, Profile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.contrib.auth import login
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404, redirect, render
 from viewer.forms import (TVForm, CustomAuthenticationForm, CustomPasswordChangeForm, ProfileForm, SignUpForm,
-                          OrderForm, BrandForm)
+                          OrderForm, BrandForm, ItemOnStockForm)
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
@@ -221,6 +221,19 @@ class StockListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         """"Umožní přístup pouze členům skupiny 'stock_admin' nebo superuživatelům"""
         return self.request.user.is_superuser or self.request.user.groups.filter(name='stock_admin').exists()
 
+
+class ItemOnStockCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = ItemsOnStock
+    template_name = 'stock/item_on_stock_create.html'
+    form_class = ItemOnStockForm
+    success_url = reverse_lazy('stock_list')
+
+    def test_func(self):
+        return self.request.user.is_superuser or self.request.user.groups.filter(name='stock_admin').exists()
+
+    def form_invalid(self, form):
+        logger.warning('User provided invalid data.')
+        return super().form_invalid(form)
 
 @login_required
 def edit_profile(request):

@@ -8,5 +8,6 @@
                 <div>{{ item.television_id  }} - {{ item.quantity }} KS</div>
             </li>
         {% endfor %}
-    <ol>
+    </ol>
+    <a href="{% url 'item_on_stock_create' %}" class="btn btn-success">Přidat položku</a>
 {% endblock %}
