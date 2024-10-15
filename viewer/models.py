@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator, MinLengthValidator, RegexValidator
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 import datetime
 import uuid
 
@@ -45,9 +47,9 @@ class Television(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     brand_model = models.CharField(max_length=50)
     tv_released_year = models.IntegerField(validators=[
-            MinValueValidator(2010),
-            MaxValueValidator(datetime.date.today().year)
-        ])
+        MinValueValidator(2010),
+        MaxValueValidator(datetime.date.today().year)
+    ])
     tv_screen_size = models.IntegerField()
     smart_tv = models.BooleanField(default=True)
     refresh_rate = models.IntegerField()
@@ -128,36 +130,52 @@ class ItemsOnStock(models.Model):
         return f'{self.quantity}x {self.television_id}'
 
 
+def validate_not_future_date(value):
+    if value > timezone.now().date():
+        raise ValidationError('Datum nemůže být v budoucnosti.')
+
+
 class Profile(models.Model):
-    ROLE_CHOICES = [
+    role_choices = [
         ('ADMINISTRATOR', 'Administrator'),
         ('USER', 'User'),
     ]
 
-    COMMUNICATION_CHANNEL_CHOICES = [
+    communication_channel_choices = [
         ('POST', 'Pošta'),
         ('EMAIL', 'Email'),
         ('TELEPHONE', 'Telefon'),
     ]
 
+    alpha_validator = RegexValidator(
+        regex=r'^[a-zA-Z]+$',  # Povoluje pouze písmena
+        message='Povoleny jsou pouze znaky a-z nebo A-Z.'
+    )
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    first_name = models.CharField(null=True, max_length=50)
-    last_name = models.CharField(null=True, max_length=50)
+    first_name = models.CharField(null=True, blank=False, max_length=50,
+                                  validators=[
+                                      alpha_validator,
+                                      MinLengthValidator(2, message='Jméno musí mít alespoň 2 znaky.')])
+    last_name = models.CharField(null=True, blank=False, max_length=50,
+                                 validators=[
+                                     alpha_validator,
+                                     MinLengthValidator(2, message='Příjmení musí mít alespoň 2 znaky.')])
     phone_number = models.CharField(
         max_length=14,
         validators=[
-            RegexValidator(regex='^\+?\d+$', message='Nesprávný formát čísla.'),
-            MinLengthValidator(9, message='Telefonní číslo musí mít alespoň 9 znaků.')
+            RegexValidator(regex=r'^\+?\d{9,}$',  # Volitelné "+" na začátku a vyžaduje alespoň 9 znaku,
+                           message='Nesprávný formát čísla. Povolené jsou pouze číslice a volitelně "+" na začátku.'),
         ],
         blank=True
     )
-    date_of_birth = models.DateField(null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True, validators=[validate_not_future_date])
     address = models.CharField(max_length=100, blank=True)
-    city = models.CharField(max_length=25, blank=True)
+    city = models.CharField(max_length=25, blank=True, validators=[alpha_validator])
     zipcode = models.CharField(max_length=5, blank=True)
     avatar = models.ImageField(upload_to='profile_pics', blank=True, null=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='USER')
-    communication_channel = models.CharField(max_length=10, choices=COMMUNICATION_CHANNEL_CHOICES, default='EMAIL')
+    role = models.CharField(max_length=20, choices=role_choices, default='USER')
+    communication_channel = models.CharField(max_length=10, choices=communication_channel_choices, default='EMAIL')
 
     @property
     def email(self):

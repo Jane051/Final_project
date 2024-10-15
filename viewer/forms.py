@@ -40,11 +40,12 @@ class SignUpForm(UserCreationForm):
         label=_('Uživatelské jméno'),
         min_length=3,
         max_length=20,
-        help_text=_('Toto pole je povinné. Uživatelské jméno musí být jediněčné, obsahovat minimálně 3 a maximálně 20 znaků, '
-                    'pouze písmena, číslice a @/./+/-/_ znaky.')
+        help_text=_(
+            'Toto pole je povinné. Uživatelské jméno musí být jediněčné, obsahovat minimálně 3 a maximálně 20 znaků, '
+            'pouze písmena, číslice a @/./+/-/_ znaky.')
     )
-    first_name = forms.CharField(label=_('Jméno'), required=False,)
-    last_name = forms.CharField(label=_('Příjmení'), required=False,)
+    first_name = forms.CharField(label=_('Jméno'), required=False, )
+    last_name = forms.CharField(label=_('Příjmení'), required=False, )
     email = forms.EmailField(
         label=_('Email'), required=True,
         help_text=_('Zadejte prosím platný e-mail.'),
@@ -74,7 +75,7 @@ class SignUpForm(UserCreationForm):
         if len(username) > 20:
             raise forms.ValidationError(_('Uživatelské jméno nesmí být delší než 30 znaků.'))
         if len(username) < 3:
-            raise forms.ValidationError(_('Uživatelské jméno nesmí být kratší než 2 znaky.'))
+            raise forms.ValidationError(_('Uživatelské jméno nesmí být kratší než 3 znaky.'))
 
         # Vlastní regulární výraz pro kontrolu platnosti uživatelského jména
         if not re.match(r'^[\w.@+-]+$', username):
@@ -145,7 +146,6 @@ class OrderForm(forms.ModelForm):
     #    if not self.television.exists() and not self.mobile_phone.exists():
     #        raise ValidationError('V objednavce musi byt alespon televize nebo mobil')
 
-
     def save(self, commit=True):
         order = super(OrderForm, self).save(commit=False)
         if self.cleaned_data['use_profile_data']:
@@ -165,15 +165,22 @@ class OrderForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['first_name', 'last_name', 'phone_number', 'address', 'city', 'zipcode', 'avatar',
+        fields = ['first_name', 'last_name', 'phone_number', 'date_of_birth', 'address', 'city', 'zipcode', 'avatar',
                   'communication_channel']
+
         labels = {
             'first_name': _('Jméno'),
             'last_name': _('Příjmení'),
             'phone_number': _('Telefon'),
+            'date_of_birth': _('Datum narození'),
             'address': _('Adresa'),
             'city': _('Město'),
             'zipcode': _('PSČ'),
             'avatar': _('Profilový obrázek'),
             'communication_channel': _('Komunikační kanál'),
         }
+
+    date_of_birth = forms.DateField(
+        input_formats=['%Y-%m-%d'],  # Zbezpeci, aby byl pouzit spravny format
+        widget=forms.DateInput(attrs={'type': 'date'})  # Customize the widget
+    )
