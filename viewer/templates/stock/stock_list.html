@@ -5,7 +5,9 @@
     <ol>
         {% for item in items %}
             <li>
-                <div>{{ item.television_id  }} - {{ item.quantity }} KS</div>
+                <div>{{ item.television_id  }} - {{ item.quantity }} KS </div>
+            <a href="{% url 'item_on_stock_update' item.pk %}" class="btn btn-warning">Edit</a>
+            <a href="{% url 'item_on_stock_delete' item.pk %}" class="btn btn-danger">Smazat</a>
             </li>
         {% endfor %}
     </ol>

@@ -122,6 +122,13 @@ class ItemOnStockForm(forms.ModelForm):
         model = ItemsOnStock
         fields = '__all__'
 
+    """Definujeme si co chceme za chybovou hlášku v případě, že přidáváme na sklad existující komponentu"""
+    def clean_television_id(self):
+        television_id = self.cleaned_data.get('television_id')
+        if ItemsOnStock.objects.filter(television_id=television_id).exists():
+            raise forms.ValidationError('Tato položka již je na skladě.')
+        return television_id
+
 
 class OrderForm(forms.ModelForm):
     """
@@ -148,8 +155,8 @@ class OrderForm(forms.ModelForm):
             self.fields['zipcode'].initial = profile.zipcode
             self.fields['phone_number'].initial = profile.phone_number
 
-    #def clean(self):
-    #    if not self.television.exists() and not self.mobile_phone.exists():
+    # def clean(self):
+    #    if not self.television.exists():
     #        raise ValidationError('V objednavce musi byt alespon televize nebo mobil')
 
     def save(self, commit=True):

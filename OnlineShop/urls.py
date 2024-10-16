@@ -20,8 +20,8 @@ from viewer.views import (BaseView, TVDetailView, TVListView, TVCreateView, TVUp
                           FilteredTelevisionListView, ProfileView, SubmittableLoginView, CustomLogoutView,
                           SubmittablePasswordChangeView, MobileListView, CreateOrderView, OrderSuccessView,
                           OrderListView, OrderDetailView, AddToCartView, RemoveFromCartView, CartView, CheckoutView,
-                          edit_profile, signup, BrandCreateView, SearchResultsView, StockListView,
-                          ItemOnStockCreateView)
+                          edit_profile, signup, BrandCreateView, SearchResultsView, ItemOnStockListView,
+                          ItemOnStockCreateView, ItemOnStockUpdateView, ItemOnStockDeleteView)
 from viewer.models import (Profile, Television, Brand, TVOperationSystem, TVDisplayResolution, TVDisplayTechnology,
                            MobilePhone, MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM,
                            MobileOperationSystem, Order, ItemsOnStock
@@ -61,8 +61,10 @@ urlpatterns = [
     # ----------------Mobil sekce----------------
     path('mobile', MobileListView.as_view(), name='mobile_list'),
     # ----------------Sklad sekce----------------
-    path('stock', StockListView.as_view(), name='stock_list'),
+    path('stock', ItemOnStockListView.as_view(), name='stock_list'),
     path('stock/create/', ItemOnStockCreateView.as_view(), name='item_on_stock_create'),
+    path('stock/update/<pk>', ItemOnStockUpdateView.as_view(), name='item_on_stock_update'),
+    path('stock/delete/<pk>', ItemOnStockDeleteView.as_view(), name='item_on_stock_delete'),
     # ----------------Cart & Order sekce----------------
     path('cart/add/<int:television_id>/', AddToCartView.as_view(), name='add_to_cart'),
     path('cart/remove/<int:television_id>/', RemoveFromCartView.as_view(), name='remove_from_cart'),
@@ -72,9 +74,6 @@ urlpatterns = [
     path('order/success/<uuid:order_id>/', OrderSuccessView.as_view(), name='order_success'),
     path('orders/', OrderListView.as_view(), name='order_list'),
     path('order/<uuid:order_id>/', OrderDetailView.as_view(), name='order_detail'),
-
-
-
 
 ]
 

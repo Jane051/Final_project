@@ -12,6 +12,7 @@ from viewer.forms import (TVForm, CustomAuthenticationForm, CustomPasswordChange
                           OrderForm, BrandForm, ItemOnStockForm)
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.db import IntegrityError
 
 logger = logging.getLogger(__name__)
 
@@ -212,7 +213,7 @@ class FilteredTelevisionListView(ListView):
         return context
 
 
-class StockListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+class ItemOnStockListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = ItemsOnStock
     template_name = 'stock/stock_list.html'
     context_object_name = 'items'
@@ -224,16 +225,39 @@ class StockListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 class ItemOnStockCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = ItemsOnStock
-    template_name = 'stock/item_on_stock_create.html'
+    template_name = 'stock/item_on_stock_create_update.html'
     form_class = ItemOnStockForm
     success_url = reverse_lazy('stock_list')
 
     def test_func(self):
         return self.request.user.is_superuser or self.request.user.groups.filter(name='stock_admin').exists()
 
+    """Zamezení duplicit je pořešeno na úrovni databáze, zde"""
+
     def form_invalid(self, form):
+        # Přidání logu při neplatném formuláři
         logger.warning('User provided invalid data.')
+        # Vrátíme neplatný formulář (s chybami)
         return super().form_invalid(form)
+
+
+class ItemOnStockUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    template_name = 'stock/item_on_stock_create_update.html'
+    model = ItemsOnStock
+    form_class = ItemOnStockForm
+    success_url = reverse_lazy('stock_list')
+
+    def test_func(self):
+        return self.request.user.is_superuser or self.request.user.groups.filter(name='stock_admin').exists()
+
+
+class ItemOnStockDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    template_name = 'stock/item_on_stock_delete.html'
+    model = ItemsOnStock
+    success_url = reverse_lazy('stock_list')
+
+    def test_func(self):
+        return self.request.user.is_superuser or self.request.user.groups.filter(name='stock_admin').exists()
 
 @login_required
 def edit_profile(request):
@@ -433,11 +457,10 @@ class OrderSuccessView(LoginRequiredMixin, DetailView):
         """Získáme objednávku podle order_id předaného v URL"""
         order = get_object_or_404(Order, order_id=self.kwargs['order_id'])
 
-        """Ověření, zda je uživatel vlastníkem objednávky"""
-        if order.user != self.request.user:
+        """Ověření, zda je uživatel vlastníkem objednávky nebo superuser"""
+        if order.user != self.request.user and not self.request.user.is_superuser:
             # Pokud není, vyvoláme 404 chybu
             raise Http404("Nemáte oprávnění k zobrazení této objednávky.")
-
         return order
 
 

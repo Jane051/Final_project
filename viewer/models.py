@@ -124,7 +124,13 @@ class MobilePhone(models.Model):
 
 class ItemsOnStock(models.Model):
     television_id = models.ForeignKey(Television, on_delete=models.CASCADE)
-    quantity = models.IntegerField(validators=[MinValueValidator(0)])
+    quantity = models.IntegerField(validators=[MinValueValidator(1)])
+
+    """UniqueConstraint zajistí, že do Modelu nepřidám stejnou položku 2x (je to bezpečnost na úrovni databáze)"""
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['television_id'], name='unique_television')
+        ]
 
     def __str__(self):
         return f'{self.quantity}x {self.television_id}'
