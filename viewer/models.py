@@ -139,7 +139,7 @@ class Profile(models.Model):
     phone_number = models.CharField(
         max_length=14,
         validators=[
-            RegexValidator(regex='^\+?\d+$', message='Nesprávný formát čísla.'),
+            RegexValidator(regex=r'^\+?\d+$', message='Nesprávný formát čísla.'),
             MinLengthValidator(9, message='Telefonní číslo musí mít alespoň 9 znaků.')
         ],
         blank=True
