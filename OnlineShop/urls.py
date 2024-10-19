@@ -13,6 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
@@ -21,18 +23,7 @@ from viewer.views import (BaseView, TVDetailView, TVListView, TVCreateView, TVUp
                           SubmittablePasswordChangeView, MobileListView, CreateOrderView, OrderSuccessView,
                           OrderListView, OrderDetailView, AddToCartView, RemoveFromCartView, CartView, CheckoutView,
                           edit_profile, signup, BrandCreateView, SearchResultsView, ItemOnStockListView,
-                          ItemOnStockCreateView, ItemOnStockUpdateView, ItemOnStockDeleteView)
-from viewer.models import (Profile, Television, Brand, TVOperationSystem, TVDisplayResolution, TVDisplayTechnology,
-                           MobilePhone, MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM,
-                           MobileOperationSystem, Order, ItemsOnStock
-                           )
-
-from django.conf import settings
-from django.conf.urls.static import static
-
-admin.site.register([Television, Brand, TVDisplayResolution, TVDisplayTechnology, TVOperationSystem, MobilePhone,
-                     MobileDisplay, MobileConstruction, MobileUserMemory, MobileRAM, MobileOperationSystem, Profile,
-                     Order, ItemsOnStock])
+                          ItemOnStockCreateView, ItemOnStockUpdateView, ItemOnStockDeleteView, terms_view)
 
 urlpatterns = [
     path('', BaseView.as_view(), name='home'),
@@ -74,7 +65,7 @@ urlpatterns = [
     path('order/success/<uuid:order_id>/', OrderSuccessView.as_view(), name='order_success'),
     path('orders/', OrderListView.as_view(), name='order_list'),
     path('order/<uuid:order_id>/', OrderDetailView.as_view(), name='order_detail'),
-
+    path('terms/', terms_view, name='terms'),
 ]
 
 if settings.DEBUG:

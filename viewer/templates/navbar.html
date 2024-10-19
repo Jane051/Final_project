@@ -1,26 +1,27 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
+<nav class="navbar navbar-expand-lg" style="background-color: #007bff;"> <!-- Barva nav bar-->
+    <div class="container" style="max-width: 12000px;"> <!--Nastavení max šířky -->
         <a class="navbar-brand" href="{% url 'home' %}">Online shop</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-                <a class="nav-item nav-link active" href="{% url 'tv_list' %}">Televize</a>
-            </div>
-            <div class="navbar-nav">
+            <!-- Kategorie vlevo  -->
+            <div class="navbar-nav me-auto">
+                <a class="nav-item nav-link" href="{% url 'tv_list' %}">Televize</a>
                 {% if user.is_superuser or stock_admin %}
-                <a class="nav-item nav-link active" href="{% url 'stock_list' %}">Sklad</a>
+                <a class="nav-item nav-link" href="{% url 'stock_list' %}">Sklad</a>
                 {% endif %}
             </div>
 
-            <!-- Search form in the middle -->
-            <div class="mx-auto d-flex justify-content-center align-items-center">
+            <!-- Hledání uprostřed -->
+            <div class="d-flex justify-content-center mx-auto">
                 <form action="{% url 'search_results' %}" method="GET" class="form-inline">
                     <div class="input-group">
-                        <input type="text" class="form-control form-control-sm" placeholder="Hledat" required name="q">
+                        <label>
+                            <input type="text" class="form-control form-control-sm" placeholder="Hledat" required name="q">
+                        </label>
                         <div class="input-group-append">
-                            <button type="submit" class="btn btn-outline-secondary" aria-label="Search">
+                            <button type="submit" class="btn btn-outline-light" aria-label="Search">
                                 <i class="bi bi-search"></i>
                             </button>
                         </div>
@@ -28,15 +29,16 @@
                 </form>
             </div>
 
-            <!-- Right aligned part of the navbar -->
-            <div class="navbar-nav ml-auto">
+            <!-- Kategorie vpravo -->
+            <div class="navbar-nav ms-auto">
+                <a class="nav-item nav-link" href="{% url 'terms' %}">Obchodní podmínky</a>
                 {% if user.is_authenticated %}
-                    <a class="nav-item nav-link active" href="{% url 'view_cart' %}">Košík</a>
-                    <a class="nav-item nav-link active" href="{% url 'profile_detail' %}">Profil</a>
-                    <a class="nav-item nav-link active" href="{% url 'logout' %}">Odhlásit</a>
+                    <a class="nav-item nav-link" href="{% url 'view_cart' %}">Košík</a>
+                    <a class="nav-item nav-link" href="{% url 'profile_detail' %}">Profil</a>
+                    <a class="nav-item nav-link" href="{% url 'logout' %}">Odhlásit</a>
                 {% else %}
-                    <a class="nav-item nav-link active" href="{% url 'login' %}">Přihlášení</a>
-                    <a class="nav-item nav-link active" href="{% url 'signup' %}">Registrace</a>
+                    <a class="nav-item nav-link" href="{% url 'login' %}">Přihlášení</a>
+                    <a class="nav-item nav-link" href="{% url 'signup' %}">Registrace</a>
                 {% endif %}
             </div>
         </div>
